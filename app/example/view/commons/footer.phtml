@@ -1,0 +1,12 @@
+<?php
+   if (!empty($footerScripts)){
+      foreach ($footerScripts as $footerScript) {
+         if (!is_array($footerScript) && !empty($footerScript['src']))
+            echo  "   <script type=\"text/javascript\" src=\"{$footerScript['src']}\"></script>" . PHP_EOL;
+         else 
+            echo  "   <script type=\"text/javascript\">{$footerScript}</script>" . PHP_EOL;
+      }
+   }
+?>
+</body>
+</html> 

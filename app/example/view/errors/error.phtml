@@ -1,0 +1,36 @@
+<?=$head?>
+<?=$menu?>
+<div class="container">
+   <div class="page-header">
+      <h1>Oops! Algo de errado :(</h1>
+   </div>
+   <div class="row">
+      <div class="col-xs-12">
+         <?php
+            if (empty($message)){
+         ?>
+         <p>
+            Eu sei que aconteceu algo errado  do lado de cá, mas não tenho certeza do que é.<br>
+            Atualize a página e tente novamente. Se o erro continuar contate um administrador.
+         </p>
+         <p>
+            Clique aqui para <a href="<?=$this->href()?>">voltar para o início</a>.
+         </p>
+         <?php
+            } else {
+         ?>
+         <p><?=$message?></p>
+         <?php
+            }
+
+            if (!empty($error)){
+         ?>
+         <div class="page-header"><h4>Detalhes:</h4></div>
+         <p><?=$error?></p>
+         <?php
+            }
+         ?>
+      </div>
+   </div>
+</div>
+<?=$footer?> 

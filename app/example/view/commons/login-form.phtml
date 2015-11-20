@@ -1,0 +1,20 @@
+<form action="<?=self::href('login')?>" method="POST">
+   <div class="form-group">
+      <label for="user">Usuário:</label>
+      <div class="input-group input-group-lg">
+         <span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-user"></i></span>
+         <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1" name="user">
+      </div>
+   </div>
+   <div class="form-group">
+      <label for="pass">Senha:</label>
+      <div class="input-group input-group-lg">
+         <span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-lock"></i></span>
+         <input type="password" class="form-control" placeholder="Username" aria-describedby="basic-addon1" name="pass">
+      </div>
+   </div>
+
+   <div class="form-group">
+      <button type="submit" class="btn btn-primary btn-lg btn-block">Entrar</button>
+   </div>
+</form> 

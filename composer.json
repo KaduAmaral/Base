@@ -1,0 +1,24 @@
+{
+    "name": "KaduAmaral/Base",
+    "description": "The Base MVC Framework",
+    "type": "library",
+    "keywords": ["framework","mvc","multi-language"],
+    "homepage": "https://github.com/KaduAmaral/Base",
+    "license": "Apache 2.0",
+    "authors": [
+        {
+            "name": "Carlos Barcelos",
+            "email": "carlos.barcelos@outlook.com",
+            "homepage": "devcia.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Monolog": "src"
+        }
+    }
+}

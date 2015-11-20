@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Base Example</title>
+   <link rel="stylesheet" type="text/css" href="<?=self::href('css/bootstrap.min.css')?>">
+<?php
+   if (!empty($headLinks)){
+      foreach ($headLinks as $headLink) {
+         echo '   <link' .
+                  (!empty($headLink['rel']) ? ' rel="' . $headLink['rel'] . '"' : '') . 
+                  (!empty($headLink['type']) ? ' type="' . $headLink['type'] . '"' : '') . 
+                  (!empty($headLink['href']) ? ' href="' . $headLink['href'] . '"' : '') . 
+                  '>' . PHP_EOL;
+      }
+   }
+?>
+<script type="text/javascript" src="<?=self::href('js/jquery-2.1.4.min.js')?>"></script>
+<script type="text/javascript" src="<?=self::href('js/bootstrap.min.js')?>"></script>
+<?php
+   if (!empty($headScripts)){
+      foreach ($headScripts as $headScript) {
+         if (!is_array($headScript) && !empty($headScript['src']))
+            echo  "   <script type=\"text/javascript\" src=\"{$headScript['src']}\"></script>" . PHP_EOL;
+         else 
+            echo  "   <script type=\"text/javascript\">{$headScript}</script>" . PHP_EOL;
+      }
+   }
+?>
+</head>
+<body> 
