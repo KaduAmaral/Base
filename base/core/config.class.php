@@ -25,6 +25,8 @@ class Config {
       $app = APP;
       $this->app = $this->apps->$app;
 
+      $this->setDefaults();
+
       $this->device = New MobileDetect();
 
       if (!defined('MOBILE'))
@@ -32,8 +34,20 @@ class Config {
       if (!defined('TABLET'))
          define('TABLET', $this->device->isTablet());
 
+
       self::setLanguage();
 
+   }
+
+   private function setDefaults(){
+      if (empty($this->app->view))
+         $this->app->view = APPS . APP . DS . 'view' . DS;
+
+      if (!defined('URL') && !empty($this->app->url)) 
+         define('URL', $this->app->url);
+
+      if (empty($this->app->url) && defined('URL'))
+         $this->app->url = URL;
    }
 
    public static function getLanguage(){

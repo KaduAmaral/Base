@@ -1,5 +1,7 @@
 <?php
 namespace Core;
+
+use \Core\Connection;
 /**
 * Model
 */
@@ -11,6 +13,10 @@ class Model {
       if (!empty($data))
          foreach ($data as $field => $value)
             $this->$field = $value;
+   }
+
+   public static function setConnection(Connection $connection) {
+      self::$connection = $connection;
    }
 
    public static function getReference(){
@@ -38,14 +44,12 @@ class Model {
       return self::getWhere([$colunm => $value]);
    }
 
-
-
-
    public static function getAll() {
       return self::getWhere(NULL);
    }
 
    public static function getWhere($where) {
+
       $stmt = self::$connection->select( self::getReference(), $where );
       $res = $stmt->execute();
 

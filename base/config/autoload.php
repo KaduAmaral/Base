@@ -70,7 +70,11 @@ spl_autoload_register(
     function ($class){
          global $autoloadlog;
 
-         $libs = [BASE, APPS.APP.DS];
+         $libs = [BASE];
+
+         if (defined('APP') && defined('APPS'))
+            $libs[] = APPS.APP.DS;
+
          $ext  = '.class.php';
          $debug = !TRUE;
 
@@ -106,16 +110,18 @@ spl_autoload_register(
              require_once $file;
 
              if (!class_exists($class, FALSE)){
-                  trigger_error('Autoload error: File loaded, but class not found.' , E_USER_ERROR);
-                  //throw new \Core\Exception\SystemException(\Core\Exception\Exceptions::E_CLASSNOTEXIST, [$class]);
+                //trigger_error('Autoload error: File loaded, but class not found.' , E_USER_ERROR);
+                //throw new \Core\Exception\SystemException(\Core\Exception\Exceptions::E_CLASSNOTEXIST, [$class]);
+                //throw new Exception("Autoload error: File loaded, but class '{$class}' not found.");
              }
 
          } else { // Se não encontrar o arquivo lança um erro na tela. :)
 
              if (is_array($libs)) $libs = implode($class.$ext . '</code>, <code>', $libs);
 
-             trigger_error("Autoload error: Can't find the file {$class}{$ext} on [{$libs}]!" , E_USER_ERROR);
+             //trigger_error("Autoload error: Can't find the file {$class}{$ext} on [{$libs}]!" , E_USER_ERROR);
              //throw new \Core\Exception\SystemException(\Core\Exception\Exceptions::E_FILENOTFOUND, ["<code>{$libs}".$class.$ext."</code>"]);
+             //throw new Exception("Autoload error: Can't find the file {$class}{$ext} on [{$libs}]!");
          }
 
     }

@@ -44,3 +44,58 @@ function str_a_replace($array, $string) {
    
    return $string;
 } 
+
+
+function genHash($size = 44, $options = array('lower', 'upper', 'nums')) {
+
+   $chars = '';
+
+   if (in_array('lower', $options))
+      $chars .= 'abcdefghijklmnopqrstuvwxyz';
+
+   if (in_array('upper', $options))
+      $chars .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+   if (in_array('nums', $options))
+      $chars .= '01234567890123456789';
+   if (in_array('special', $options))
+      $chars .= '#$%&#$%&#$%&';
+
+   $chars = $chars.$chars.$chars.$chars;
+
+   $output = '';
+
+   for ($i=0; $i < $size; $i++) { 
+      $output .= $chars[rand(0,strlen($chars)-1)];
+   }
+
+   return $output;
+
+}
+
+/**
+ * @func  is_class_method
+ * @param $type      "public" / "static" / "private"
+ * @param $method    Method name
+ * @param $class     Class name
+ */
+
+function is_class_method($type="public", $method, $class) {
+   // $type = mb_strtolower($type);
+   try {
+       $refl = new ReflectionMethod($class, $method);
+
+       switch($type) {
+           case "static":
+           return $refl->isStatic();
+           break;
+           case "public":
+           return $refl->isPublic();
+           break;
+           case "private":
+           return $refl->isPrivate();
+           break;
+       }
+   } catch (Exception $e) {
+      exit('Erro: '.$e->getMessage());
+   }
+} 

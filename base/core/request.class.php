@@ -11,6 +11,7 @@ class Request {
    public $get;
    public $request;
    public $session;
+   public $headers;
    public $ajax;
    public $method;
 
@@ -39,6 +40,8 @@ class Request {
 
       $this->ajax = $this->isAjax();
 
+      $this->headers = getallheaders();
+
 
    }
 
@@ -48,7 +51,7 @@ class Request {
       if (!empty($_GET['uri'])){
          $uri = explode('/', $_GET['uri']);
 
-         if (empty($this->session['app']))
+         //if (empty($this->session['app']))
 
          if (count($uri) > 0)
             $this->controller = array_shift($uri);
@@ -83,22 +86,26 @@ class Request {
       if (empty($params))
          return $this->header('Location: ' . Route::href());
 
-      if (is_string($params))
+
+      if (is_string($params)) {
          return $this->header('Location: ' . $params);
+      }
 
       if (is_array($params)){
 
          $controller = empty($params['controller']) ? 'main' : $params['controller'];
-         $action = empty($params['controller']) ? 'index' : $params['controller'];
+         $action = empty($params['action']) ? 'index' : $params['action'];
 
          return $this->header('Location: ' . Route::href("{$controller}/{$action}"));
       } else 
          return $this->header('Location: ' . Route::href());
+
+
+      exit;
    }
 
    public function header($content) {
       header($content);
-      exit;
    }
 
    private function setVar($name, $clear = TRUE) {
