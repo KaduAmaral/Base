@@ -119,7 +119,13 @@ a {
   border:0;
   width:100%;
 }
+.nav ul::after {
+  display:block;
+  content:'';
+  clear:both;
+}
 .nav li {
+  float:left;
   display:inline-block;
   list-style: none;
   margin: 0;
