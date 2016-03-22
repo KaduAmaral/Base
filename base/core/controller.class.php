@@ -19,6 +19,7 @@ class Controller {
    protected $load;
    protected $model;
    protected $config;
+
    public static $connection = NULL;
 
    function __construct($request) {
@@ -35,9 +36,12 @@ class Controller {
       Load::$config = $this->config;
 
       $this->checkPermission();
+
+      Model::$controller = $this;
    }
 
    public function execute($param = NULL){
+
 
       $action = $this->request->action;
 
@@ -45,8 +49,9 @@ class Controller {
          throw new \Exception("Requisição inválida", 1);
          
 
-      if (!is_null($param))
+      if (!is_null($param)){
          return $this->$action($param);
+      }
       else 
          return $this->$action();
 

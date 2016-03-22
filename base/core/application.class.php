@@ -59,7 +59,6 @@ class Application {
          }
 
       } catch (Exception $e) {
-
          $app = New ErrorController($request);
          $output = $app->index();
 

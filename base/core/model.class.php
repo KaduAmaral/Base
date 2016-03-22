@@ -8,11 +8,21 @@ use \Core\Connection;
 class Model {
 
    public static $connection;
+   public static $controller;
+   private $__error = NULL;
+
 
    function __construct($data = []) {
-      if (!empty($data))
-         foreach ($data as $field => $value)
-            $this->$field = $value;
+      if (!empty($data)){
+
+         foreach ($data as $field => $value){
+            if (method_exists($this, 'set'.ucfirst(strtolower($field))))
+               $this->{'set'.$field}($value);
+            elseif (property_exists(get_called_class(), $field)) {
+               $this->{$field} = $value;
+            }
+         }
+      }
    }
 
    public static function setConnection(Connection $connection) {
@@ -63,6 +73,77 @@ class Model {
          return NULL;
 
       return (count($rows) == 1 ? array_shift($rows) : $rows);
+   }
+
+   public function _getError(){
+      return $this->__error;
+   }
+
+   protected function _setError($error){
+      $this->__error = $error;
+      return $this->error;
+   }
+
+   protected function preSave() {
+      return TRUE;
+   }
+
+   protected function afterSave($res) {
+      return $res;
+   }
+
+   public function save(){
+
+      if (!$this->preSave()) {
+         return FALSE;
+      }
+
+
+      $reference = $this->getReference();
+      $pk = $this->getPK();
+
+      $data = get_object_vars($this);
+
+      if (empty($pk)) {
+         throw new \Exception('Model PK is empty!');
+      }
+         
+      $pkv = !empty($data[$pk]) ? $data[$pk] : NULL;
+
+      unset($data[$pk]);
+      unset($data['__error']);
+
+      if (empty($pkv)) {
+         if (array_key_exists('created', $data))
+            $data['created'] = Date('Y-m-d H:i:s');
+
+         self::$connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
+         $res = self::$connection->insert($reference, $data)->execute();
+
+         if ($res) {
+            $this->{'set'.$pk}(self::$connection->lastInsertId());
+         }
+
+
+         $this->afterSave($res);
+
+         return $res;
+      } else {
+
+         if (array_key_exists('modified', $data))
+            $data['modified'] = Date('Y-m-d H:i:s');
+
+         foreach ($data as $col => $value)
+            if (empty($value) && $value !== NULL && $value !== 0)
+               unset($data[$col]);
+
+         $res = self::$connection->update($reference, $data, [$pk => $pkv])->execute();
+
+         $this->afterSave($res);
+
+         return $res;
+      }
+
    }
 
 } 
