@@ -51,7 +51,7 @@ class Route {
    }
 
    public static function href($params = ''){
-      $uri = is_array($params) ? self::_href($params) : $params ;
+      $uri = is_string($params) ? $params : self::_href($params);
 
       if (empty($uri))
          return rtrim(URL, '/');
@@ -64,9 +64,16 @@ class Route {
    private static function _href($route){
       $uri = '';
 
-      $uri  = !empty($route['class']) ? $route['class'] : 'index';
-      $uri .= '/';
-      $uri .= !empty($route['action']) ? $route['action'] : 'index';
+      if (is_object($route)) {
+        $uri  = property_exists($route, 'controller') ? $route->controller : 'index';
+        $uri .= '/';
+        $uri .= property_exists($route, 'action') ? $route->action : 'index';
+      } else if (is_array($route)) {
+        $uri  = !empty($route['controller']) ? $route['controller'] : 'index';
+        $uri .= '/';
+        $uri .= !empty($route['action']) ? $route['action'] : 'index';
+      }
+
 
       if (!empty($route['params']))
          foreach ($route['params'] as $key => $val)

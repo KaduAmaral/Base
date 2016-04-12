@@ -57,7 +57,7 @@ class Load {
    public function file($file, $vars = []) {
       if (file_exists($file)){
          return $this->load($file, TRUE, $vars);
-      } else throw new SystemException(Exceptions::E_FILENOTFOUND, [$file]);
+      } else throw new SystemException('File not found: '.$file, Exceptions::E_FILENOTFOUND);
    }
 
    public function email($file, $vars = []){
@@ -114,7 +114,7 @@ class Load {
          require_once $file;
          return New $class();
       } else
-         throw New SystemException(Exceptions::E_CLASSNOTEXIST, [$class]);
+         throw New SystemException('Class not exists: ' . $class, Exceptions::E_CLASSNOTEXIST);
    }
 
    private function load($___content, $___file, $___vars){

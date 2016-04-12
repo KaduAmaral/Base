@@ -1,4 +1,4 @@
-# Base &ndash; 0.0.0-DEV.2
+# Base &ndash; 0.0.0-DEV.3
 
 Base é uma "base" para construção de soluções em MVC com PHP. 
 Construi o _framework_ para uso próprio, porém resolvi disponibilizar para a comunidade em geral.
@@ -14,7 +14,7 @@ O framework ainda está em fase de construção.
 Muita coisa pra fazer. Ainda não foi especificado um roteiro, mas aqui estão as principais:
 
 1. <s>Criar biblioteca de conexão no estilo do [ConnectionMSi](https://github.com/KaduAmaral/ConnectionMSi), com funções de `select`, `insert`, `update` e etc. Porém utilizando PDO criando métodos para MySQL, MariaDB, PostgreSQL e MSSQL inicialmente;</s>
-  - Criado o Projeto [ConnectionPDO](https://github.com/KaduAmaral/ConnectionPDO), porém implementado apenas o drive do MySQL. **Drives TO DO**:
+  - Criado o Projeto [ConnectionPDO](https://github.com/KaduAmaral/ConnectionPDO), porém implementado apenas o driver do MySQL. **Drivers TO DO**:
     * <s>MySQL</s>
     * MariaDB
     * PostgreSQL

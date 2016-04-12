@@ -10,80 +10,160 @@ use \Core\Model;
 * Controller
 */
 class Controller {
-   protected $output = '';
+   public $outputreturn = TRUE;
+   private $output = '';
 
    public $route;
    public $request;
+   public $cache = [];
    protected $load;
    protected $model;
    protected $config;
-   protected $connection;
+
+   public static $connection = NULL;
 
    function __construct($request) {
 
       //$this->request = New Request();
       $this->request = $request;
-      $this->route   = New Route();
       $this->config  = New Config();
+      $this->route   = New Route();
       $this->load    = New Load();
 
-      if (!empty($this->config->app->database)){
-         $this->connection = New Connection($this->config->app->database);
 
-         Model::$connection = $this->connection;
-      }
+      $this->startConnection();
 
       Load::$config = $this->config;
 
       $this->checkPermission();
 
+      Model::$controller = $this;
    }
 
    public function execute($param = NULL){
 
+
       $action = $this->request->action;
 
-      if (!is_null($param))
-         $this->$action($param);
-      else 
-         $this->$action();
+      if (!method_exists($this, $action))
+         throw new \Exception("Requisição inválida", 1);
+         
 
+      if (!is_null($param)){
+         return $this->$action($param);
+      }
+      else 
+         return $this->$action();
+
+   }
+
+   public function controller($controller, $action = 'index'){
+
+
+      $class = "\\Controller\\{$controller}Controller";
+      if (class_exists($class)) {
+
+         $request = clone $this->request;
+
+
+         $request->controller = $controller;
+         $request->action = $action;
+
+         $app = New $class($request);
+
+         if (method_exists($app, $action)) {
+            return $app->$action();
+         } else {
+            throw new \Exception('Requisição inválida.');
+         }
+      } else {
+         throw new \Exception('Requisição inválida.');
+      }
    }
 
    private function checkPermission() {
       //return true;
-      if ($this->config->app->authentication) {
+
+
+      if (!empty($this->config->app->authentication)) {
+
 
          $authentication = $this->config->app->authentication;
 
-         $auth = "\\Controller\\{$authentication->controller}Controller";
-         $check = $authentication->action;
+         $auth = $authentication->class;
+         $check = $authentication->method;
 
-         if (!($auth::$check())){
-            if (!property_exists($authentication->routes, $this->request->controller)){
-               $this->request->redirect(Route::href("{$authentication->redirect->controller}/{$authentication->redirect->action}"));
-            }
-            else if (
-               property_exists($authentication->routes, $this->request->controller) && 
-               !in_array($this->request->action, (array)$authentication->routes->{$this->request->controller})
-            ){
-               $this->request->redirect(Route::href("{$authentication->redirect->controller}/{$authentication->redirect->action}"));
-            }
+         if (
+            !empty($this->config->app->authentication->notcheckon) && 
+            !empty($this->config->app->authentication->notcheckon->{strtolower($this->request->controller)}) &&
+            (
+               $this->config->app->authentication->notcheckon->{strtolower($this->request->controller)} === '*' ||
+               in_array($this->request->action, (array)$this->config->app->authentication->notcheckon->{strtolower($this->request->controller)})
+            )
+         ) {
+            return TRUE;
          }
+
+         if (FALSE && $this->request->controller == 'error') {
+            var_dump($this->request->controller);
+            echo '\n\n';
+            var_dump($this->config->app->authentication->notcheckon);
+            exit;
+            
+         }
+
+
+         if (method_exists($auth, 'setController')) {
+            $auth::setController($this);
+         }
+
+         $auth::$check();
+
       }
 
       return TRUE;
    }
 
-   public function output($print = TRUE){
-      $output = $this->output;
-      $this->output = '';
+   public function setOutput($output) {
+      $this->output = $output;
+   }
 
-      Model::$connection = NULL;
-      $this->connection = NULL;
-      
+   public function appendOutput($output) {
+      $this->output = $this->output . $output;
+   }
+
+   public function prependOutput($output) {
+      $this->output = $output . $this->output;
+   }
+
+   public function output($print = TRUE, $clear = TRUE){
+      $output = $this->output;
+
+      if ($clear)
+         $this->output = '';
+
+      $this->closeConnection();
+
       if ($print) echo     $output;
       else        return   $output;
+   }
+
+   public function startConnection() {
+      if (!empty($this->config->app->database) && is_null(self::$connection)){
+         self::$connection = New Connection($this->config->app->database);
+
+         if (defined('DEBUG') && DEBUG === TRUE)
+            self::$connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
+
+         Model::_setConnection(self::$connection);
+      }
+   }
+
+   public function closeConnection(){
+      if (!is_null(self::$connection)){
+         Model::$connection = NULL;
+         self::$connection = NULL;
+      }
    }
 
 } 

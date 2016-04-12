@@ -34,19 +34,23 @@ class Connection extends ConnectionPDO {
 
       unset($data[$pk]);
 
-
-
       if (empty($pkv)) {
+         if (array_key_exists('created', $data))
+            $data['created'] = Date('Y-m-d H:i:s');
+
          $res = $this->insert($reference, $data)->execute();
 
          if ($res)
             $model->$pk = $this->lastInsertId();
 
          return $res;
-      }
-      else {
+      } else {
+
+         if (array_key_exists('modified', $data))
+            $data['modified'] = Date('Y-m-d H:i:s');
+
          foreach ($data as $col => $value)
-            if (empty($value))
+            if (empty($value) && $value !== NULL && $value !== 0)
                unset($data[$col]);
 
          return $this->update($reference, $data, [$pk => $pkv])->execute();
