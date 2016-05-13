@@ -66,6 +66,10 @@ class Model {
       return $reference;
    }
 
+   public static function _isPkAi() {
+      return (property_exists(get_called_class(), '_ispkai') ? static::$_ispkai : TRUE);
+   }
+
    /**
     * Get model Primary Key field
     * @return string/array
@@ -211,7 +215,6 @@ class Model {
          return FALSE;
       }
 
-
       $reference = $this->_getReference();
       $pk = $this->_getPK();
 
@@ -224,17 +227,30 @@ class Model {
       if (is_array($pk)) {
          $pkv = [];
          $_pkv = [];
+         $insert = TRUE;
          foreach ($pk as $c) {
             if (!empty($data[$c])) {
                $pkv[] = $data[$c];
                $_pkv[$c] = $data[$c];
-               unset($data[$c]);
+               // unset($data[$c]);
+               $insert = FALSE;
             }
          }
+
+         if (!$insert) {
+            $insert = is_null(self::getWhere($_pkv));
+         }
+
+
       } else {
          $pkv = !empty($data[$pk]) ? $data[$pk] : NULL;
          $_pkv = [$pk => $pkv];
-         unset($data[$pk]);
+
+         // Se for AUTO INCREMENT remove dos campos a serem INSERIDOS/ALTERADOS
+         if (self::_isPkAi())
+            unset($data[$pk]);
+
+         $insert = empty($pkv);
       }
 
       unset($data['__error']);
@@ -244,7 +260,10 @@ class Model {
             unset($data[$key]);
       }
 
-      if (empty($_pkv)) {
+      define('DEBUG', TRUE);
+
+      if ($insert) {
+
 
          if (array_key_exists('created', $data))
             $data['created'] = Date('Y-m-d H:i:s');
@@ -252,12 +271,13 @@ class Model {
           if (array_key_exists('modified', $data))
             unset($data['modified']);
 
-         
-         if (defined('DEBUG') && DEBUG === TRUE) self::$connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
+
+         if (defined('DEBUG') && DEBUG === TRUE) 
+            self::$connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
 
          $res = self::$connection->insert($reference, $data)->execute();
 
-         if ($res && $pk !== NULL) {
+         if ($res && $pk !== NULL && !is_array($pk)) {
             $this->{'set'.$pk}(self::$connection->lastInsertId());
          }
 
