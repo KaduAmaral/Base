@@ -42,10 +42,10 @@ class Application {
             $app->setOutput($app->index());
             $app->output();
          }
-      } else if (!empty($request->lost))
-         $param = $request->lost;
-      else {
+      } else if (empty($request->lost) && !is_numeric($request->lost))
          $param = NULL;
+      else {
+         $param = $request->lost;
       }
 
 
