@@ -10,6 +10,10 @@ class Model {
    public static $connection;
    public static $controller;
    private $__error = NULL;
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
 
    
    function __construct($data = []) {
@@ -25,12 +29,16 @@ class Model {
       }
    }
 
+<<<<<<< HEAD
    /**
     * Set the static method with current connection
     * @param Connection $connection 
     * @return void
     */
    public static function _setConnection(Connection $connection) {
+=======
+   public static function setConnection(Connection $connection) {
+>>>>>>> origin/master
       self::$connection = $connection;
    }
 
@@ -96,10 +104,13 @@ class Model {
       return self::getWhere([$colunm => $value]);
    }
 
+<<<<<<< HEAD
    /**
     * Get All registers 
     * @return Array(Model)
     */
+=======
+>>>>>>> origin/master
    public static function getAll() {
       return self::getWhere(NULL);
    }
@@ -111,7 +122,11 @@ class Model {
     */
    public static function getWhere($where) {
 
+<<<<<<< HEAD
       $stmt = self::$connection->select( self::_getReference(), $where );
+=======
+      $stmt = self::$connection->select( self::getReference(), $where );
+>>>>>>> origin/master
       $res = $stmt->execute();
 
       $rows = array();
@@ -126,32 +141,42 @@ class Model {
       return (count($rows) == 1 ? array_shift($rows) : $rows);
    }
 
+<<<<<<< HEAD
    /**
     * Get some error
     * @return string
     */
+=======
+>>>>>>> origin/master
    public function _getError(){
       return $this->__error;
    }
 
+<<<<<<< HEAD
    /**
     * Set some error
     * @param string $error 
     * @return string
     */
+=======
+>>>>>>> origin/master
    protected function _setError($error){
       $this->__error = $error;
       return $this->error;
    }
 
+<<<<<<< HEAD
    /**
     * PreSave validation function (to override)
     * @return bool
     */
+=======
+>>>>>>> origin/master
    protected function preSave() {
       return TRUE;
    }
 
+<<<<<<< HEAD
    /**
     * After Save actions function (to override)
     * @param bool $res Resulto of save
@@ -165,6 +190,12 @@ class Model {
     * Save method, save current Model (Insert or Update)
     * @return bool
     */
+=======
+   protected function afterSave($res) {
+      return $res;
+   }
+
+>>>>>>> origin/master
    public function save(){
 
       if (!$this->preSave()) {
@@ -172,6 +203,7 @@ class Model {
       }
 
 
+<<<<<<< HEAD
       $reference = $this->_getReference();
       $pk = $this->_getPK();
 
@@ -181,16 +213,30 @@ class Model {
          throw new \Exception('Model PK is empty!');
       }
 
+=======
+      $reference = $this->getReference();
+      $pk = $this->getPK();
+
+      $data = get_object_vars($this);
+
+      if (empty($pk)) {
+         throw new \Exception('Model PK is empty!');
+      }
+         
+>>>>>>> origin/master
       $pkv = !empty($data[$pk]) ? $data[$pk] : NULL;
 
       unset($data[$pk]);
       unset($data['__error']);
 
+<<<<<<< HEAD
       foreach ($data as $key => $value) {
          if (strpos($key, '_') === 0)
             unset($data[$key]);
       }
 
+=======
+>>>>>>> origin/master
       if (empty($pkv)) {
          if (array_key_exists('created', $data))
             $data['created'] = Date('Y-m-d H:i:s');
@@ -198,7 +244,11 @@ class Model {
          self::$connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
          $res = self::$connection->insert($reference, $data)->execute();
 
+<<<<<<< HEAD
          if ($res && $pk !== NULL) {
+=======
+         if ($res) {
+>>>>>>> origin/master
             $this->{'set'.$pk}(self::$connection->lastInsertId());
          }
 

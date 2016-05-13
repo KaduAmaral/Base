@@ -102,6 +102,7 @@ class Controller {
             )
          ) {
             return TRUE;
+<<<<<<< HEAD
          }
 
          if (FALSE && $this->request->controller == 'error') {
@@ -117,6 +118,23 @@ class Controller {
             $auth::setController($this);
          }
 
+=======
+         }
+
+         if (FALSE && $this->request->controller == 'error') {
+            var_dump($this->request->controller);
+            echo '\n\n';
+            var_dump($this->config->app->authentication->notcheckon);
+            exit;
+            
+         }
+
+
+         if (method_exists($auth, 'setController')) {
+            $auth::setController($this);
+         }
+
+>>>>>>> origin/master
          $auth::$check();
 
       }
@@ -152,10 +170,14 @@ class Controller {
       if (!empty($this->config->app->database) && is_null(self::$connection)){
          self::$connection = New Connection($this->config->app->database);
 
+<<<<<<< HEAD
          if (defined('DEBUG') && DEBUG === TRUE)
             self::$connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
 
          Model::_setConnection(self::$connection);
+=======
+         Model::setConnection(self::$connection);
+>>>>>>> origin/master
       }
    }
 

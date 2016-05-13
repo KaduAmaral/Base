@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Base &ndash; 0.0.0-DEV.3
+=======
+# Base &ndash; 0.0.0-DEV.3.1
+>>>>>>> origin/master
 
 Base é uma "base" para construção de soluções em MVC com PHP. 
 Construi o _framework_ para uso próprio, porém resolvi disponibilizar para a comunidade em geral.
