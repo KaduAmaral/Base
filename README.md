@@ -1,4 +1,4 @@
-# Base &ndash; 0.0.0-DEV.3.3
+# Base &ndash; 0.0.0-DEV.3.4
 >>>>>>> origin/master
 
 Base é uma "base" para construção de soluções em MVC com PHP. 

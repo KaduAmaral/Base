@@ -57,7 +57,7 @@ class Controller {
 
    }
 
-   public function controller($controller, $action = 'index'){
+   public function controller($controller, $action = 'index', $args = NULL){
 
 
       $class = "\\Controller\\{$controller}Controller";
@@ -72,7 +72,10 @@ class Controller {
          $app = New $class($request);
 
          if (method_exists($app, $action)) {
-            return $app->$action();
+            if (is_array($args) && count($args) > 0)
+               return call_user_func_array([$app, $action], $args);
+            else
+               return $app->$action();
          } else {
             throw new \Exception('Requisição inválida.');
          }

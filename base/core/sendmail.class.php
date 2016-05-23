@@ -28,47 +28,47 @@ class SendMail extends PHPMailer {
    private $debug = FALSE;
    private $config;
 
-   function __construct($config = NULL) {
+   function __construct() {
 
-      if (!defined('EMAIL_CONFIG')){
-         if (is_null($config))
-            throw new \Exception('Configurações de e-mail não informada', 14);
-         else
-            $this->config = $config;
-      } else
-         $this->config = EMAIL_CONFIG;
+      if (empty(Config::$email))
+         throw new \Exception('Configurações de e-mail não informada', 14);
+      else
+         $this->config = Config::$email;
 
-      if ($this->config['debug'])
+      if (!empty($this->config->debug) && $this->config->debug)
          $this->SMTPDebug  = 2; 
 
-      if ($this->config['smtp'])
+      if (!empty($this->config->smtp) && $this->config->smtp)
          $this->IsSMTP(); // telling the class to use SMTP
       
-      if ($this->config['auth'])
+      if (!empty($this->config->auth) && $this->config->auth)
          $this->SMTPAuth = TRUE; // enable SMTP authentication
 
-
-      $this->SMTPSecure = $this->config['secure']; // sets the prefix to the servier
+      if (!empty($this->config->secure))
+         $this->SMTPSecure = $this->config->secure; // sets the prefix to the servier
       
-      $this->Host = $this->config['host'];
+      if (!empty($this->config->host))
+         $this->Host = $this->config->host;
 
-      $this->Port = 465; // set the SMTP port
-      $this->Username = 'no-reply@joshuakingdom.com.br';
-      $this->Password = 'iL]4*-64^$Ew';
+      if (!empty($this->config->port))
+         $this->Port = $this->config->port; // set the SMTP port || 465
+      
+      $this->Username = $this->config->user;
+      $this->Password = $this->config->pass;
       
       $this->isHTML(true);
+
       $this->setLanguage('pt');
+
       $this->CharSet = 'utf-8';
-      $this->SetFrom($this->config['from']['email'], $this->config['from']['name']);
+
+      if (!empty($this->config->from))
+         $this->SetFrom($this->config->from->email, !empty($this->config->from->name) ? $this->config->from->name : $this->config->from->email);
 
    }
 
-   function Debug(){
+   function Debug() {
       $this->debug = !$this->debug;
    }
 
-   function load($file, $vars = []){
-      return  Load::EMAIL($file, $vars);
-   }
-
-} 
+}

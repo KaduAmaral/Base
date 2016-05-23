@@ -17,13 +17,16 @@ class Config {
    public $device;
 
    public static $config;
-   public static $email;
+   public static $email = NULL;
 
    function __construct() {
       
       $this->apps = (require APPS . 'appsconfig.php');
       $app = APP;
       $this->app = $this->apps->$app;
+
+      if (!empty($this->app->email))
+         self::$email = $this->app->email;
 
       $this->setDefaults();
 
@@ -36,12 +39,14 @@ class Config {
 
 
       self::setLanguage();
-
    }
 
    private function setDefaults(){
       if (empty($this->app->view))
          $this->app->view = APPS . APP . DS . 'view' . DS;
+
+      if (empty($this->app->emails))
+         $this->app->emails = $this->app->view . 'emails' . DS;
 
       if (!defined('URL') && !empty($this->app->url)) 
          define('URL', $this->app->url);
