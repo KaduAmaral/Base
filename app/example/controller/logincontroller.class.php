@@ -16,9 +16,9 @@ class LoginController extends Controller
          '</div></div>'.
          '%footer%',
          Array(
-            'header' => $this->load->view('commons/head.phtml'),
-            'menu'   => $this->load->view('commons/menu.phtml'),
-            'footer' =>$this->load->view('commons/footer.phtml')
+            'header' => $this->load->view('commons/head'),
+            'menu'   => $this->load->view('commons/menu'),
+            'footer' =>$this->load->view('commons/footer')
          )
       );
    }

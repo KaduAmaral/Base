@@ -1,8 +1,6 @@
 <?php
 namespace Core;
 
-require_once ADDONS.'ConnectionPDO'.DS.'ConnectionPDO.php';
-
 use \ConnectionPDO;
 
 use \Core\Model;

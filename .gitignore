@@ -1,3 +1,10 @@
+# Dependencias
+app/*
+!app/appsconfig.php.example
+/vendor
+composer.lock
+composer.phar
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

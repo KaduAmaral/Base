@@ -13,8 +13,6 @@
 
    define('CONFIG',  __DIR__.DS);
 
-   define('ADDONS',  BASE.'addons'.DS);
-
    define('DATA', ROOT.'data'.DS);
 
    define('CLASSEXTENSION', '.class.php');

@@ -8,10 +8,16 @@ use \Core\Exception\Exceptions;
 class Route {
 
    private static $routes = [];
+   private static $params = [
+      ':controller'  => '\w+',
+      ':action'      => '\w+',
+      ':lang'        => '[a-z]{2}\-[a-z]{2}',
+      ':id'          => '\d+'
+   ];
 
    
    public static function guest() {
-      if (file_exists(APPS.APP.DS.'routes.php')){
+      if (file_exists(APPS.APP.DS.'routes.php')) {
          $routes = (require APPS.APP.DS.'routes.php');
          foreach ($routes as $url => $params)
             self::register($params, $url);

@@ -15,12 +15,7 @@
 */
 namespace Core;
 
-require_once ADDONS.'PHPMailer/PHPMailerAutoload.php';
-
-use \PHPMailer;
-
-class SendMail extends PHPMailer {
-   
+class SendMail extends \PHPMailer {
 
    private $vars;
    private $tplfolder;
@@ -29,6 +24,7 @@ class SendMail extends PHPMailer {
    private $config;
 
    function __construct() {
+      parent::__construct();
 
       if (empty(Config::$email))
          throw new \Exception('Configurações de e-mail não informada', 14);

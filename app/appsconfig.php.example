@@ -1,0 +1,7 @@
+<?php
+
+return objectify(Array(
+   'site' => Array(
+      'url' => 'http://contoso.com/',
+   )
+)); 

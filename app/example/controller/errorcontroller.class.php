@@ -10,10 +10,10 @@ class ErrorController extends Controller {
    public $error;
 
    function index() {
-      $this->output = $this->load->view('errors/filenotfound.phtml', Array(
-         'head' => $this->load->view('commons/head.phtml'),
-         'menu' => $this->load->view('commons/menu.phtml'),
-         'footer' => $this->load->view('commons/footer.phtml'),
+      $this->output = $this->load->view('errors/filenotfound', Array(
+         'head' => $this->load->view('commons/head'),
+         'menu' => $this->load->view('commons/menu'),
+         'footer' => $this->load->view('commons/footer'),
          'file' => $this->error,
          'error' => $this->message
       ));

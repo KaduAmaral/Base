@@ -1,11 +1,6 @@
 <?php
 namespace Core;
 
-require_once ADDONS.'INI'.DS.'INI.class.php';
-require_once ADDONS.'MobileDetect'.DS.'MobileDetect.class.php';
-
-use \INI;
-use \Addons\MobileDetect\MobileDetect;
 /**
 * Config
 */
@@ -30,7 +25,7 @@ class Config {
 
       $this->setDefaults();
 
-      $this->device = New MobileDetect();
+      $this->device = New \Mobile_Detect();
 
       if (!defined('MOBILE'))
          define('MOBILE', $this->device->isMobile());

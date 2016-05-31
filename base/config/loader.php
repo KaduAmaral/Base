@@ -8,5 +8,7 @@
 
    require_once __DIR__.DS.'autoload.php';
 
+   if (is_readable(ROOT . DS . 'vendor' . DS . 'autoload.php'))
+      require_once ROOT . DS . 'vendor' . DS . 'autoload.php';
 
    //require_once __DIR__.DS.'config.php'; 

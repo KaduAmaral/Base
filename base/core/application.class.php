@@ -20,16 +20,6 @@ class Application {
       $request = New Request();
       $class = '\\Controller\\'.$request->controller.'Controller';
 
-      /*
-      if ($request->controller != 'main') {
-         exit('RUN... ' . $request->controller);
-         exit;
-      } else {
-         header('Location: http://agendamento.devcia.com/error/unknow');
-         exit;
-      }
-      //*/
-
       // Retorno caso configuração $outputreturn do controller seja true
       $output = '';
 
@@ -50,7 +40,6 @@ class Application {
 
 
       try {
-
          if (class_exists($class)) {
             $app = New $class($request);
             $output = $app->execute($param);
@@ -61,8 +50,8 @@ class Application {
       } catch (Exception $e) {
          $app = New ErrorController($request);
          $output = $app->index();
-
       }
+
 
       if ($app->outputreturn)
          $app->setOutput($output);
