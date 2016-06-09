@@ -23,14 +23,30 @@ class Application {
       // Retorno caso configuração $outputreturn do controller seja true
       $output = '';
 
+      try {
+
+         if (class_exists($class)) {
+            $app = New $class($request);
+         } else {
+            throw new Exception("Requisição inválida");
+         }
+
+      } catch (Exception $e) {
+         $app = New ErrorController($request);
+         $app->setOutput($app->index());
+         $app->output();
+         return FALSE;
+      }
+
+
       if (!empty($request->post['mvc:model'])){
          $model = '\Model\\' . array_remove($request->post, 'mvc:model') . 'Model';
          try {
             $param = New $model($request->post);
          } catch (Exception $e) {
-            $app = New \Controller\ErrorController($request);
             $app->setOutput($app->index());
             $app->output();
+            return FALSE;
          }
       } else if (empty($request->lost) && !is_numeric($request->lost))
          $param = NULL;
@@ -40,18 +56,13 @@ class Application {
 
 
       try {
-         if (class_exists($class)) {
-            $app = New $class($request);
-            $output = $app->execute($param);
-         } else {
-            throw new Exception("Requisição inválida");
-         }
-
+         $output = $app->execute($param);
       } catch (Exception $e) {
          $app = New ErrorController($request);
-         $output = $app->index();
+         $app->setOutput($app->index());
+         $app->output();
+         return FALSE;
       }
-
 
       if ($app->outputreturn)
          $app->setOutput($output);

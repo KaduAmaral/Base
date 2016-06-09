@@ -1,5 +1,4 @@
-# Base &ndash; 0.0.0-DEV.4
->>>>>>> origin/master
+# Base &ndash; 0.0.0-DEV.4.1
 
 Base é uma "base" para construção de soluções em MVC com PHP. 
 Construi o _framework_ para uso próprio, porém resolvi disponibilizar para a comunidade em geral.
@@ -23,6 +22,7 @@ Muita coisa pra fazer. Ainda não foi especificado um roteiro, mas aqui estão a
 2. Criar estrutura de `Exceptions` e realizar _log_ dos erros e excessões para _debug_;
 3. Criar métodos e recursos para facilitar o _debug_ da aplicação;
 4. Criar recurso de instalação facilitando a configuração dos arquivos necessários;
+5. Implementar sistema de rotas.
 
 
 ## Licença

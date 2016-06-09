@@ -13,7 +13,10 @@ class Model {
 
    
    function __construct($data = []) {
-      if (!empty($data)) $this->_setData($data);
+      if (!empty($data)) {
+        $this->_preLoad($data);
+        $this->_setData($data);
+      }
    }
 
    public function refresh() {
@@ -25,6 +28,26 @@ class Model {
       
       return FALSE;
       
+   }
+
+   public function _preLoad($data) {
+      $pk = self::_getPK();
+      if (!is_array($pk)) $pk = [$pk];
+      $pks = [];
+
+      $haspk = TRUE;
+
+      foreach ($pk as $key)
+         if (!empty($data[$key]))
+            $pks[$key] = $data[$key];
+         else
+            $haspk = FALSE;
+
+      if ($haspk && !empty($pks)) {
+         $this->_setData($pks);
+         $this->refresh();
+      }
+
    }
 
    private function _setData($data) {
@@ -129,7 +152,6 @@ class Model {
     * @return Array(Model)
     */
    public static function getWhere($where, $shift = TRUE, $setobj = TRUE) {
-
       $stmt = self::$connection->select( self::_getReference(), $where );
       $res = $stmt->execute();
 
@@ -260,10 +282,7 @@ class Model {
             unset($data[$key]);
       }
 
-      define('DEBUG', TRUE);
-
       if ($insert) {
-
 
          if (array_key_exists('created', $data))
             $data['created'] = Date('Y-m-d H:i:s');
@@ -271,9 +290,6 @@ class Model {
           if (array_key_exists('modified', $data))
             unset($data['modified']);
 
-
-         if (defined('DEBUG') && DEBUG === TRUE) 
-            self::$connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
 
          $res = self::$connection->insert($reference, $data)->execute();
 
@@ -293,11 +309,6 @@ class Model {
          if (array_key_exists('created', $data))
             unset($data['created']);
 
-         foreach ($data as $col => $value)
-            if (empty($value) && $value !== NULL && $value !== 0)
-               unset($data[$col]);
-
-         if (defined('DEBUG') && DEBUG === TRUE) self::$connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
          $res = self::$connection->update($reference, $data, $_pkv)->execute();
 
          $this->afterSave($res);
@@ -307,4 +318,4 @@ class Model {
 
    }
 
-} 
+}
