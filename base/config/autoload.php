@@ -72,8 +72,8 @@ spl_autoload_register(
 
          $libs = [BASE];
 
-         if (defined('APP') && defined('APPS'))
-            $libs[] = APPS.APP.DS;
+         if (defined('APP'))
+            $libs[] = APP;
 
          $ext  = '.class.php';
          $debug = !TRUE;

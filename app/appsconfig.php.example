@@ -2,6 +2,36 @@
 
 return objectify(Array(
    'site' => Array(
-      'url' => 'http://contoso.com/',
+      'url'      => 'http://contoso.com/',               // Application URL
+      'database' => Array(
+         'driver'  => 'mysql',                           // SQL Driver (mysql only avaliable)
+         'host'    => 'localhost',                       // Database Host connection
+         'port'    => 3306,                              // Database Port connection
+         'user'    => 'root',                            // Database User
+         'pass'    => '',                                // Databse Password
+         'schema'  => 'test',                            // Database Name
+         'charset' => 'utf8'                             // Charset (if omitted 'utf8' is setted by default)
+      ),
+      'email' => Array(
+         'host'         => 'smtp.contoso.com',           // SMTP Host
+         'port'         => 465,                          // PORT
+         'auth'         => TRUE,                         // Authenticate?
+         'secure'       => 'ssl',                        // Encriptation tls | ssl?
+         'user'         => 'no-reply@contoso.com',       // Authentication User
+         'pass'         => 'P455W0RD',                   // Authentication Password
+         'from'         => Array(                        // Who is sending de e-mail?
+            'email'=>'contact@contoso.com',
+            'name'=>'Contoso Site'
+         ) 
+      ),
+      ,
+      'authentication' => Array(
+         'class' => '\\Authentication\\Authentication',  // Your Authentication Verification Class
+         'method' => 'validateAccess',                   // Your Authentication Verification Method
+         'redirect' => 'error/_401',                     // Redirect Route on fail
+         'notcheckon' => Array(                          // Not Check On [Class => Action] | * is a wildcard
+            'error' => '*'                               // Will no check on any method from class Error
+         )
+      )
    )
 )); 

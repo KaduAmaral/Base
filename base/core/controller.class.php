@@ -1,11 +1,7 @@
 <?php
 namespace Core;
-use \Core\Request;
-use \Core\Route;
-use \Core\Load;
-use \Core\Config;
-use \Core\Connection;
-use \Core\Model;
+
+use Core\Routes\Router;
 /**
 * Controller
 */
@@ -22,18 +18,16 @@ class Controller {
 
    public static $connection = NULL;
 
-   function __construct($request) {
+   function __construct() {
 
       //$this->request = New Request();
-      $this->request = $request;
-      $this->config  = New Config();
-      $this->route   = New Route();
+      $this->request = Request::getInstance();
+      $this->config  = Config::getInstance();
+
+      $this->route   = New Router();
       $this->load    = New Load();
 
-
       $this->startConnection();
-
-      Load::$config = $this->config;
 
       $this->checkPermission();
 
@@ -42,19 +36,10 @@ class Controller {
 
    public function execute($param = NULL){
 
+      if (!is_callable([$this, $this->request->action]))
+         throw new Exception('Requisição inválida');
 
-      $action = $this->request->action;
-
-      if (!method_exists($this, $action))
-         throw new \Exception("Requisição inválida", 1);
-         
-
-      if (!is_null($param)){
-         return $this->$action($param);
-      }
-      else 
-         return $this->$action();
-
+      return call_user_func([$this, $this->request->action], $param);
    }
 
    public function controller($controller, $action = 'index', $args = NULL){
@@ -88,20 +73,20 @@ class Controller {
       //return true;
 
 
-      if (!empty($this->config->app->authentication)) {
+      if (!empty($this->config->authentication)) {
 
 
-         $authentication = $this->config->app->authentication;
+         $authentication = $this->config->authentication;
 
          $auth = $authentication->class;
          $check = $authentication->method;
 
          if (
-            !empty($this->config->app->authentication->notcheckon) && 
-            !empty($this->config->app->authentication->notcheckon->{strtolower($this->request->controller)}) &&
+            !empty($this->config->authentication->notcheckon) && 
+            !empty($this->config->authentication->notcheckon->{strtolower($this->request->controller)}) &&
             (
-               $this->config->app->authentication->notcheckon->{strtolower($this->request->controller)} === '*' ||
-               in_array($this->request->action, (array)$this->config->app->authentication->notcheckon->{strtolower($this->request->controller)})
+               $this->config->authentication->notcheckon->{strtolower($this->request->controller)} === '*' ||
+               in_array($this->request->action, (array)$this->config->authentication->notcheckon->{strtolower($this->request->controller)})
             )
          ) {
             return TRUE;
@@ -110,7 +95,7 @@ class Controller {
          if (FALSE && $this->request->controller == 'error') {
             var_dump($this->request->controller);
             echo '\n\n';
-            var_dump($this->config->app->authentication->notcheckon);
+            var_dump($this->config->authentication->notcheckon);
             exit;
             
          }
@@ -152,8 +137,8 @@ class Controller {
    }
 
    public function startConnection() {
-      if (!empty($this->config->app->database) && is_null(self::$connection)){
-         self::$connection = New Connection($this->config->app->database);
+      if (!empty($this->config->database) && is_null(self::$connection)){
+         self::$connection = New Connection($this->config->database);
 
          if (defined('DEBUG') && DEBUG === TRUE)
             self::$connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );

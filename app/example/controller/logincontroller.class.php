@@ -9,10 +9,10 @@ class LoginController extends Controller
 {
    
    function index() {
-      $this->output = $this->load->content(
+      return $this->load->content(
          '%header% %menu%'.
          '<div class="container"><div class="col-xs-12">'.
-         'Nada implementado. <a href="'. $this->route->href() .'">Voltar</a>'.
+         'Página de Login (ou era pra ser :P). <a href="'. $this->route->href() .'">Voltar</a>'.
          '</div></div>'.
          '%footer%',
          Array(

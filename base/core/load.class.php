@@ -1,15 +1,13 @@
 <?php
 namespace Core;
-use \Core\Route;
-use \Core\Exception\SystemException;
-use \Core\Exception\Exceptions;
+
+use \Core\Routes\Router;
 /**
 * Load
 */
 
 class Load {
 
-   public static $config;
    public $viewbag;
    public $viewdata;
    private $model;
@@ -57,7 +55,7 @@ class Load {
    public function file($file, $vars = []) {
       if (file_exists($file)){
          return $this->load($file, TRUE, $vars);
-      } else throw new SystemException('File not found: '.$file, Exceptions::E_FILENOTFOUND);
+      } else throw new \InvalidArgumentException('O arquivo não existe: '.$file);
    }
 
    public function email($file, $vars = []){
@@ -98,32 +96,35 @@ class Load {
    }
 
    public static function href($uri = ''){
-      return Route::href($uri);
+      return Router::href($uri);
    }
 
    private function getViewFolder(){
-      return self::$config->app->view;
+      return Config::getInstance()->views;
    }
 
    public function model($route){
+
       $route = explode('/'. $route);
       $class = $route[0];
       $action = !empty($route[1]) ? $route[1] : 'index';
       $file = strtolower( MODEL.$class.'Model'.CLASSEXTENSION );
-      if(file_exists($file)){
+
+      if (file_exists($file)) {
          require_once $file;
          return New $class();
       } else
-         throw New SystemException('Class not exists: ' . $class, Exceptions::E_CLASSNOTEXIST);
+         throw New \InvalidArgumentException('A classe não existe: '. $class);
    }
 
-   private function load($___content, $___file, $___vars){
+   private function load($___content, $___file, $___vars) {
       ob_start();
 
       if ($___file){
-         if (!empty($___vars) && is_array($___vars))
+         if (!empty($___vars) && is_array($___vars)) {
             foreach ($___vars as $___var => $___value)
                $$___var = $___value;
+         }
 
          require_once $___content;
       } else
