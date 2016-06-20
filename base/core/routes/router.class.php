@@ -15,7 +15,7 @@ class Router {
    /**
     * @var \Core\Routes\Routes
     */
-   protected static $routes;
+   public static $routes;
 
 
    /**
@@ -53,8 +53,6 @@ class Router {
     */
    function __construct($routes = NULL) {
 
-      self::$routes = new Routes();
-
       if (empty(self::$request))
          self::$request = Request::getInstance();
 
@@ -75,8 +73,22 @@ class Router {
 
    }
 
-   public static function main($options) {
-      return self::register(['/', array_merge(['name'=>'home'], $options)]);
+   public static function main($options = NULL) {
+      if (is_null($options))
+         return self::$routes['home'];
+      else
+         return self::register(['/', array_merge(['name'=>'home'], $options)]);
+   }
+
+   public static function notfound($options = NULL) {
+      return self::error(404, $options);
+   }
+
+   public static function error($code, $options = NULL) {
+      if (empty($options))
+         return self::$routes["error.{$code}"];
+      else
+         return self::register(["/{$code}", array_merge(['name' => "error.{$code}"], $options)]);
    }
 
    /**
@@ -90,10 +102,9 @@ class Router {
     */
    public static function register($route) {
       if (is_array($route)) {
-         $r = $route[0];
-         $o = !empty($route[1]) ? $route[1] : NULL;
-         $c = !empty($route[2]) ? $route[2] : NULL;
-         return self::route($r,$o,$c);
+         return forward_static_call_array(['self','route'], $route);
+         //return call_user_func_array(self::route, $route);
+         // return self::route($r,$o,$c);
       } else if ($route instanceof Route) {
          return self::add($route);
       } else if (is_string($route)) {
@@ -116,10 +127,13 @@ class Router {
       if (!(self::$routes instanceof Routes))
          self::$routes = new Routes();
 
+
       if (is_null($route))
          return FALSE;
-      
-      self::$routes->offsetSet($route->name, $route);
+
+      //self::$routes->offsetSet($route->name, $route);
+
+      self::$routes[$route->name] = $route;
 
       self::$route = $route;
 
@@ -130,42 +144,103 @@ class Router {
     * 
     * Adiciona uma rota
     * 
-    * @param string $route rota
+    * @param string $host Endereço da rota, ex: /postagem, /postagem/:id, /artigo/:slug, etc
     * 
-    * @param array|null $options | function|null $callback
+    * @param string|null $name Nome da rota (para identificação), deve ser único. (optional)
     * 
-    * @param function|null $callback 
+    * @param array|null $options Opções da rota [controller, action, etc..]
+    * 
+    * @param function|null $callback Callback da rota . (não implementado ainda)
+    * 
+    * @param type|null $route Objeto Route, ex: (New Route([host:home,controller:main,action:index,name:home]))
+    * 
+    * @execution Router::route('/contato',['controller'=>'contato','action'=>'index']);
+    * 
+    * @execution Router::route('/contato', 'pagina.contato', ['controller'=>'contato','action'=>'index']);
+    * 
+    * @execution Router::route('/contatar', 'pagina.contatar', [
+    *    'controller'=>'contato',
+    *    'action'=>'index'
+    * ], Router::GetByName('pagina.contato'));
+    * 
+    * @execution Router::route('/contatar', Router::GetByName('pagina.contato'))
     * 
     * @return Route
     * 
     */
-   public static function route($route, $name = NULL, $options = NULL, $callback = NULL) {
+   public static function route($host, $name = NULL, $options = NULL, $callback = NULL, $route = NULL) {
 
+      $options = self::parseRouteOptions($host, $name, $options, $callback, $route);
 
-      if (is_callable($name)) {
-         $callback = $name;
-         $name = NULL;
+      $route = self::parseRouteRoute($host, $name, $options, $callback, $route);
+
+      $callback = self::parseRouteCallback($host, $name, $options, $callback, $route);
+
+      if (is_callable($callback)) $options['handler'] = $callback;
+
+      if (!empty($name) && is_string($name)) $options['name'] = $name;
+
+      if (is_null($route))
+         $route = New Route($host, $options);
+      else {
+         $options['host'] = $host;
+         $route = $route->_clone($options);
       }
 
-      if (is_callable($options)) {
-         $callback = $options;
-         $options = NULL;
-      }
+      return self::add($route);
+   }
 
-      if (is_array($name)) {
-         $options = $name;
-         $name = NULL;
-      }
+   private static function parseRouteOptions($host, $name = NULL, $options = NULL, $callback = NULL, $route = NULL) {
 
-      $options = (array) $options;
+      if (is_array($host)) $options = $host;
 
-      if (!is_null($callback)) $options['handler'] = $callback;
+      if (is_array($name)) $options = $name;
 
-      return self::add(New Route($route, $options));
+      if (!is_array($options)) $options = [];
+
+      return $options;
+   }
+
+   private static function parseRouteCallback($host, $name = NULL, $options = NULL, $callback = NULL, $route = NULL) {
+
+      if (is_callable($host)) $callback = $host;
+
+      if (is_callable($name)) $callback = $name;
+
+      if (is_callable($options)) $callback = $options;
+
+      if (is_callable($route))  $callback = $route;
+
+      if (!is_callable($callback)) $callback = NULL;
+
+      return $callback;
+   }
+
+   private static function parseRouteRoute($host, $name = NULL, $options = NULL, $callback = NULL, $route = NULL) {
+
+      if ($host instanceof Route) $route = $host;
+
+      if ($name instanceof Route) $route = $name;
+
+      if ($options instanceof Route) $route = $options;
+
+      if ($callback instanceof Route) $route = $callback;
+
+      if (!($route instanceof Route))  $route = NULL;
+
+      return $route;
+   }
+
+   public static function GetByName($name) {
+      if (!isset(self::$routes[$name]))
+         return NULL;
+
+      return self::$routes[$name];
    }
 
    public function GetByRequest() {
       $matcher = $this->matcher;
+
       $route = $matcher(self::$request, self::$routes);
 
       return $route;
@@ -227,7 +302,7 @@ class Router {
    public static function getInstance() {
 
       if ( !(self::$instance instanceof Router) )
-         self::$instance = New self();
+         New self();
 
       return self::$instance;
    }

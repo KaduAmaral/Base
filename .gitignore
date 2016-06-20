@@ -1,6 +1,5 @@
 # Dependencias
-app/*
-!app/appsconfig.php.example
+
 vendor/
 composer.lock
 composer.phar

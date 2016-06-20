@@ -25,12 +25,20 @@ class Application {
          return FALSE;
       }
 
-
-      // Router em implementação
-      // $router = Router::getInstance();
-
       $request = Request::getInstance();
 
+      // Router em implementação
+      $router = Router::getInstance();
+
+      $route = $router->GetByRequest();
+
+      if ($route) {
+         $request->controller = $route->controller;
+         $request->action = $route->action;
+         $request->params = (object) $route->attributes;
+      } else {
+         $request->parseRoute();
+      }
 
       $class = "\\Controller\\{$request->controller}Controller";
 
@@ -40,8 +48,8 @@ class Application {
 
       try {
 
-         if ( !class_exists($class) )
-            throw new Exception("Requisição inválida.");
+         if (!class_exists($class) )
+            throw new Exception("A URL {$request->uri} é inválida.");
 
          $app = New $class();
 
@@ -62,10 +70,13 @@ class Application {
             $app->output();
             return FALSE;
          }
-      } else if ( empty($request->lost) && !is_numeric($request->lost) )
+      } else if (!!$route && count($route->attributes) > 0)
+         $param = $route->attributes;
+      else if ( empty($request->lost) && !is_numeric($request->lost) )
          $param = NULL;
       else
-         $param = $request->lost;
+         $param = [$request->lost];
+
 
       try {
          $output = $app->execute( $param );

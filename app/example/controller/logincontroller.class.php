@@ -11,8 +11,9 @@ class LoginController extends Controller
    function index() {
       return $this->load->content(
          '%header% %menu%'.
-         '<div class="container"><div class="col-xs-12">'.
-         'Página de Login (ou era pra ser :P). <a href="'. $this->route->href() .'">Voltar</a>'.
+         '<div class="container"><div class="col-xs-12 col-sm-6 col-sm-offset-3">'.
+         '<div class="page-header"><h1>Entrar</h1></div>'.
+         $this->load->view('commons/login-form').
          '</div></div>'.
          '%footer%',
          Array(

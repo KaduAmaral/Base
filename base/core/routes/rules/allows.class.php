@@ -3,7 +3,7 @@
 namespace Core\Routes\Rules;
 
 use \Core\Request;
-use \Core\Route;
+use \Core\Routes\Route;
 
 class Allows implements RuleInterface {
    /**

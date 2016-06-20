@@ -151,8 +151,6 @@ class Request {
 
       $this->method = $_SERVER['REQUEST_METHOD'];
 
-      $this->parseRoute();
-
       $this->setVar('post');
       $this->setVar('get');
       $this->setVar('request');
@@ -161,6 +159,10 @@ class Request {
       $this->ajax = $this->isAjax();
 
       $this->headers = getallheaders();
+
+      $this->url = $_SERVER['REQUEST_SCHEME'] . '://' .$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+
+      $this->uri = '/' . trim(!empty($_GET['URI']) ? $_GET['URI'] : str_replace(Config::getInstance()->url, '', $this->url), '/');
 
       self::$instance = $this;
    }
@@ -188,26 +190,14 @@ class Request {
     * 
     * OBS: Deprecated 
     */
-   private function parseRoute(){
+   public function parseRoute(){
       $this->params = new \stdClass();
 
-      $this->url = $_SERVER['REQUEST_SCHEME'] . '://' .$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+      $uri = explode('/', trim($this->uri, '/'));
 
-      $this->uri = '/' . trim(!empty($_GET['URI']) ? $_GET['URI'] : str_replace(Config::getInstance()->url, '', $this->url), '/');
+      $this->controller = count($uri) > 0 ? array_shift($uri) : 'Main';
 
-      $uri = explode('/', $this->uri);
-
-      if (count($uri) > 0)
-         $this->controller = array_shift($uri);
-
-      if (empty($this->controller))
-         $this->controller = 'main';
-
-      if (count($uri) > 0)
-         $this->action = array_shift($uri);
-
-      if (empty($this->action))
-         $this->action = 'index';
+      $this->action = count($uri) > 0 ? array_shift($uri) : 'index';
 
       if (count($uri)  > 0){
          $key = NULL;

@@ -39,7 +39,7 @@ class Controller {
       if (!is_callable([$this, $this->request->action]))
          throw new Exception('Requisição inválida');
 
-      return call_user_func([$this, $this->request->action], $param);
+      return call_user_func_array([$this, $this->request->action], (array) $param);
    }
 
    public function controller($controller, $action = 'index', $args = NULL){

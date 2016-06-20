@@ -2,9 +2,8 @@
 
 namespace Core\Routes;
 
-use \ArrayIterator;
 
 /**
 * 
 */
-class Routes extends ArrayIterator {}
+class Routes extends \ArrayIterator {}

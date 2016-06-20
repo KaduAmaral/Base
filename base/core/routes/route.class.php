@@ -5,12 +5,7 @@ namespace Core\Routes;
 */
 class Route {
 
-   private $defaults = [
-      ':controller'  => '\w+',
-      ':action'      => '\w+',
-      ':lang'        => '[a-z]{2}\-[a-z]{2}',
-      ':id'          => '\d+'
-   ];
+   private $defaults = [];
 
    /**
     * Rota
@@ -69,7 +64,7 @@ class Route {
     * @var array<RouteRule>
     * 
     */
-   private $rules = [];
+   protected $rules = [];
 
    /**
     * Handler
@@ -110,13 +105,23 @@ class Route {
     * @return void
     * 
     */
-   public function __construct($route, $options = NULL) {
+   public function __construct($host, $options = NULL) {
       if (is_null($options)) $options = [];
 
-      if (is_array($route))
-         $options = array_merge($options, $route);
-      else if (is_string($route))
-         $options['route'] = $route;
+      if (is_array($host))
+         $options = array_merge($options, $host);
+      else if (is_string($host))
+         $options['host'] = $host;
+
+      if (empty($options['rules']))
+         $options['rules'] = [
+            new \Core\Routes\Rules\Allows,
+            new \Core\Routes\Rules\Host
+         ];
+
+      if (!isset($options['params'])) $options['params'] = [];
+
+      $options['params'] = array_merge($this->defaults, $options['params']);
 
       if (!empty($options))
          $this->settings($options);
@@ -136,15 +141,19 @@ class Route {
       if (empty($options))
          return $this;
 
-      if (!empty($options['route']) && empty($options['pattern']))
-         $options['pattern'] = $options['route'];
+      if (!empty($options['host']) && empty($options['pattern']))
+         $options['pattern'] = $options['host'];
 
       if (empty($options['name']))
-         $options['name'] = $options['route'];
+         $options['name'] = $options['host'];
 
       foreach ($options as $p => $value)
          if (is_callable([$this, $p]))
             $this->$p($value);
+
+      
+      //$this->setHost();
+
 
       return $this;
    }
@@ -157,7 +166,22 @@ class Route {
      */
    public function __clone() {
       // $this é a instância clonada, não a original
-      $this->params = $this->defaults;
+      // $this->name = NULL;
+      // $this->host = NULL;
+      // $this->pattern = NULL;
+      $this->attributes = [];
+   }
+
+   public function _clone($options = NULL) {
+
+      $route = clone $this;
+      $route->name = NULL;
+      $route->host = NULL;
+      $route->pattern = NULL;
+
+      $route->settings($options);
+
+      return $route;
    }
 
 
@@ -178,6 +202,21 @@ class Route {
 
    /**
     * 
+    * Seta os métodos permitidos
+    * 
+    * @param callable|function|object $allows 
+    * 
+    * @return Route
+    * 
+    */
+   public function rules($rule) {
+      $this->rules = array_merge($this->rules, (array) $rule);
+      return $this;
+   }
+
+
+   /**
+    * 
     * Seta os parâmetros
     * 
     * @param type $params 
@@ -186,10 +225,24 @@ class Route {
     * 
     */
    public function params($params) {
-      $this->params = array_merge($this->defaults, (array) $params);
+      $this->params = array_merge($this->params, (array) $params);
+
       return $this;
    }
 
+   /**
+    * 
+    * Seta os parâmetros
+    * 
+    * @param type $attributes 
+    * 
+    * @return type
+    * 
+    */
+   public function attributes($attributes) {
+      $this->attributes = array_merge($this->attributes, (array) $attributes);
+      return $this;
+   }
 
    /* Propriedades Imutáveis */
 
@@ -297,6 +350,17 @@ class Route {
       return $this;
    }
 
+   public function setHost() {
+      $host = $this->route;
+      
+      if (!empty($this->params))
+         foreach ($this->params as $param => $ex)
+            $host = str_replace(":{$param}", $ex, $host);
+      
+
+      return $this->host($host);
+
+   }
 
    /**
     * 
