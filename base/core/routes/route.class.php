@@ -145,15 +145,11 @@ class Route {
          $options['pattern'] = $options['host'];
 
       if (empty($options['name']))
-         $options['name'] = $options['host'];
+         $options['name'] = str_replace('/', '.', trim($options['host'], '/'));
 
       foreach ($options as $p => $value)
          if (is_callable([$this, $p]))
             $this->$p($value);
-
-      
-      //$this->setHost();
-
 
       return $this;
    }

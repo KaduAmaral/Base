@@ -3,36 +3,57 @@
 use \Core\Routes\Router;
 use \Core\Config;
 
+// Configura a aplicação, setando o name e URL
+// Outras configurações também são possívels, como conexão com banco, 
+// Configurações de e-mail e etc.
+
 Config::Set([
    'url' => 'http://localhost/Base/public_html/',
    'name' => 'example',
 ]);
 
+// Seta a rota de erro 404
 Router::notfound([
    'controller' => 'Error',
    'action' => 'index'
 ]);
 
+
+// Setá a rota padrão, home/index
 Router::main([
    'controller' => 'Main',
    'action'     => 'index'
 ]);
 
+// Apenas replicando a rota  padrão para ser acessada através do endereço /index
 Router::route('/index', Router::main());
 
-Router::route('/entrar',[
+// Rota para o formulário de LOGIN, acessível apenas via GET
+Router::get('/entrar', 'entrar', [
    'controller' => 'Login',
    'action' => 'index'
 ]);
 
-Router::route('/post/:id',[
+// Replicando a rota /entrar para /login. Permitira acesso pelo mesmo Method que a rota /entrar (GET)
+Router::route('/login', 'login.form', Router::GetByName('entrar')->_clone());
+
+// Rota para realizar o login, acessível apenas via POST
+Router::post('/login', 'login', [
+   'controller' => 'Login',
+   'action' => 'login'
+]);
+
+
+// Rota: GET /post/<id>
+Router::get('/post/:id',[
    'controller' => 'Main',
    'action' => 'teste'
 ])->params([
       'id' => '\d+'
 ]);
 
-Router::route('/post/:slug',[
+// Rota: GET /post/<algum-endereco>
+Router::get('/post/:slug',[
    'controller' => 'Main',
    'action' => 'action'
 ])->params([
@@ -40,7 +61,8 @@ Router::route('/post/:slug',[
 ]);
 
 
-Router::route('/post/:date/:slug', [
+// Rota: GET /post/<DD-MM-YYYY>/<algum-endereco>
+Router::get('/post/:date/:slug', [
    'controller' => 'Main',
    'action' => 'pdate'
 ])->params([

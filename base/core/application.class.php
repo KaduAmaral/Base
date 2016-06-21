@@ -32,6 +32,10 @@ class Application {
 
       $route = $router->GetByRequest();
 
+      if (!$route) {
+         $route = Router::notfound();
+      }
+
       if ($route) {
          $request->controller = $route->controller;
          $request->action = $route->action;

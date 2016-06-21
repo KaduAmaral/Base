@@ -22,7 +22,7 @@ class Allows implements RuleInterface {
          return TRUE;
       }
 
-      $request = $request->getMethod() ?: 'GET';
+      $requestMethod = $request->getMethod() ?: 'GET';
       return in_array($requestMethod, $route->allows);
    }
 }

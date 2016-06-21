@@ -75,9 +75,9 @@ class Router {
 
    public static function main($options = NULL) {
       if (is_null($options))
-         return self::$routes['home'];
+         return self::GetByName('default.index');
       else
-         return self::register(['/', array_merge(['name'=>'home'], $options)]);
+         return self::register(['/', array_merge(['name'=>'default.index'], $options)]);
    }
 
    public static function notfound($options = NULL) {
@@ -86,7 +86,7 @@ class Router {
 
    public static function error($code, $options = NULL) {
       if (empty($options))
-         return self::$routes["error.{$code}"];
+         return self::GetByName("error.{$code}");
       else
          return self::register(["/{$code}", array_merge(['name' => "error.{$code}"], $options)]);
    }
@@ -131,9 +131,9 @@ class Router {
       if (is_null($route))
          return FALSE;
 
-      //self::$routes->offsetSet($route->name, $route);
+      self::$routes->offsetSet($route->name, $route);
 
-      self::$routes[$route->name] = $route;
+      //self::$routes[$route->name] = $route;
 
       self::$route = $route;
 
@@ -170,11 +170,12 @@ class Router {
     */
    public static function route($host, $name = NULL, $options = NULL, $callback = NULL, $route = NULL) {
 
-      $options = self::parseRouteOptions($host, $name, $options, $callback, $route);
 
       $route = self::parseRouteRoute($host, $name, $options, $callback, $route);
 
       $callback = self::parseRouteCallback($host, $name, $options, $callback, $route);
+
+      $options = self::parseRouteOptions($host, $name, $options, $callback, $route);
 
       if (is_callable($callback)) $options['handler'] = $callback;
 
@@ -184,6 +185,7 @@ class Router {
          $route = New Route($host, $options);
       else {
          $options['host'] = $host;
+
          $route = $route->_clone($options);
       }
 
@@ -231,11 +233,43 @@ class Router {
       return $route;
    }
 
-   public static function GetByName($name) {
-      if (!isset(self::$routes[$name]))
-         return NULL;
+   /**
+    * Mesmo que Router::route([...])->allows('GET') ou Router::route([...,] ['allows'=>'GET'] [,...])
+    * @return Route
+    */
+   public static function get($host, $name = NULL, $options = NULL, $callback = NULL, $route = NULL) {
+      return self::route($host, $name, $options, $callback, $route)->allows('GET');
+   }
 
-      return self::$routes[$name];
+   /**
+    * Mesmo que Router::route([...])->allows('POST') ou Router::route([...,] ['allows'=>'POST'] [,...])
+    * @return Route
+    */
+   public static function post($host, $name = NULL, $options = NULL, $callback = NULL, $route = NULL) {
+      return self::route($host, $name, $options, $callback, $route)->allows('POST');
+   }
+
+   /**
+    * Mesmo que Router::route([...])->allows('PUT') ou Router::route([...,] ['allows'=>'PUT'] [,...])
+    * @return Route
+    */
+   public static function put($host, $name = NULL, $options = NULL, $callback = NULL, $route = NULL) {
+      return self::route($host, $name, $options, $callback, $route)->allows('PUT');
+   }
+
+   /**
+    * Mesmo que Router::route([...])->allows('DELETE') ou Router::route([...,] $options = ['allows'=>'DELETE'] [,...])
+    * @return Route
+    */
+   public static function delete($host, $name = NULL, $options = NULL, $callback = NULL, $route = NULL) {
+      return self::route($host, $name, $options, $callback, $route)->allows('DELETE');
+   }
+
+   public static function GetByName($name) {
+      if (self::$routes instanceof Routes && self::$routes->offsetExists($name))
+         return self::$routes->offsetGet($name);
+
+      return NULL;
    }
 
    public function GetByRequest() {
