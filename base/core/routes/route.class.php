@@ -420,7 +420,15 @@ class Route {
     * 
     */
    public function __get($key) {
-      return $this->$key;
+      return $this->{$key};
+   }
+
+   public function __isset($key) {
+      if (isset($this->{$key})) {
+         return (FALSE === empty($this->{$key}));
+      } else {
+         return NULL;
+      }
    }
 
 } 

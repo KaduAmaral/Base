@@ -9,6 +9,7 @@ class Controller {
    public $outputreturn = TRUE;
    private $output = '';
 
+   public $router;
    public $route;
    public $request;
    public $cache = [];
@@ -18,16 +19,20 @@ class Controller {
 
    public static $connection = NULL;
 
-   function __construct() {
+   function __construct(Request $request = NULL) {
 
       //$this->request = New Request();
-      $this->request = Request::getInstance();
+
+      $this->request = is_null($request) ? Request::getInstance() : $request;
       $this->config  = Config::getInstance();
 
-      $this->route   = New Router();
+      $this->router   = New Router();
+      $this->route = $this->router;
       $this->load    = New Load();
 
       $this->startConnection();
+
+      $controller = get_class($this);
 
       $this->checkPermission();
 
@@ -39,20 +44,22 @@ class Controller {
       if (!is_callable([$this, $this->request->action]))
          throw new Exception('Requisição inválida');
 
+      if (!is_array($param)) $param = [$param];
+
       return call_user_func_array([$this, $this->request->action], (array) $param);
    }
 
-   public function controller($controller, $action = 'index', $args = NULL){
-
+   public function controller($controller, $action = 'index', $args = NULL) {
 
       $class = "\\Controller\\{$controller}Controller";
+
       if (class_exists($class)) {
 
          $request = clone $this->request;
 
-
          $request->controller = $controller;
          $request->action = $action;
+         $request->params = $args;
 
          $app = New $class($request);
 
@@ -62,19 +69,19 @@ class Controller {
             else
                return $app->$action();
          } else {
-            throw new \Exception('Requisição inválida.');
+            throw new Exception('Requisição inválida.');
          }
+
       } else {
-         throw new \Exception('Requisição inválida.');
+         throw new Exception('Requisição inválida.');
       }
+
    }
 
    private function checkPermission() {
       //return true;
 
-
       if (!empty($this->config->authentication)) {
-
 
          $authentication = $this->config->authentication;
 
@@ -137,6 +144,8 @@ class Controller {
    }
 
    public function startConnection() {
+
+
       if (!empty($this->config->database) && is_null(self::$connection)){
          self::$connection = New Connection($this->config->database);
 
@@ -144,6 +153,8 @@ class Controller {
             self::$connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );
 
          Model::_setConnection(self::$connection);
+      } else {
+
       }
    }
 

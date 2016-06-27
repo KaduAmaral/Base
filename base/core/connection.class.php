@@ -10,6 +10,8 @@ use \Core\Model;
 */
 class Connection extends ConnectionPDO {
    
+   private static $instance;
+
    function __construct($settings) {
       $dns = $settings->driver . 
             ':host=' . $settings->host . 
@@ -21,6 +23,12 @@ class Connection extends ConnectionPDO {
 
       if (defined('DEBUG') && DEBUG === TRUE) 
          $this->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+
+      self::$instance = $this;
+   }
+
+   public static function getInstance() {
+      return self::$instance;
    }
 
 }

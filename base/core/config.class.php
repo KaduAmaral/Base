@@ -86,6 +86,12 @@ class Config {
    protected $useroutes;
 
    /**
+    * @var bool - Não parsear URL caso não encontre a rota (url/controller/action)
+    */
+   protected $onlyroutes;
+
+
+   /**
     * Nome do diretório do aplicativo (caso esteja no diretório padrão /apps/<nome>/) 
     * ou caminho completo do diretório
     * 
@@ -295,15 +301,19 @@ class Config {
       if (empty($value))
          throw new \InvalidArgumentException('Não é possível setar a propriedade "authentication" para um valor vazio.');
 
-      $this->authentication = $value;
+      $this->authentication = objectify($value);
    }
 
    public function database($value) {
-      $this->database = $value;
+      $this->database = objectify($value);
    }
 
    public function useroutes($value) {
       $this->useroutes = $value;
+   }
+
+   public function onlyroutes($value) {
+      $this->onlyroutes = $value;
    }
 
 
@@ -311,7 +321,7 @@ class Config {
       if (empty($value))
          throw new \InvalidArgumentException('Não é possível setar a propriedade "email" para um valor vazio.');
 
-      $this->email = $value;
+      $this->email = objectify($value);
    }
 
    public function __get($key) {
@@ -321,10 +331,18 @@ class Config {
             return $this->defaults[$key];
          else
             return $this->{$key};
-      }
+      } else if (isset($this->appconfigs[$key]))
+        return $this->appconfigs($key);
 
       throw new \Core\Exception\InvalidPropertyException("A propriedade '{$key}' é inválida.");
-      
+   }
+
+   public function __isset($key) {
+      if (isset($this->{$key})) {
+         return (FALSE === empty($this->{$key}));
+      } else {
+         return NULL;
+      }
    }
 
    public static function getInstance() {

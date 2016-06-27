@@ -32,8 +32,8 @@ class Application {
 
       $route = $router->GetByRequest();
 
-      if (!$route) {
-         $route = Router::notfound();
+      if ($config->onlyroutes && !$route) {
+        $route = Router::notfound();
       }
 
       if ($route) {
@@ -69,6 +69,10 @@ class Application {
 
          try {
             $param = New $model($request->post);
+
+            if ($param)
+               $param = [$param];
+
          } catch (Exception $e) {
             $app->setOutput($app->index());
             $app->output();
@@ -81,9 +85,8 @@ class Application {
       else
          $param = [$request->lost];
 
-
       try {
-         $output = $app->execute( $param );
+         $output = $app->execute($param);
       } catch (Exception $e) {
          echo self::Error($e->getMessage());
          return FALSE;

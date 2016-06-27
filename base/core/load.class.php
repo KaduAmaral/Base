@@ -59,13 +59,19 @@ class Load {
    }
 
    public function email($file, $vars = []){
-      return $this->file(EMAILS.$file, $vars);
+      if (strpos(substr($file, -1*(strlen(VIEWEXTENSION)+1)),'.') === FALSE)
+         $file .= VIEWEXTENSION;
+
+      return $this->file($this->getEmailsFolder().$file, $vars);
    }
 
    public function view($file, $vars = []){
       $this->backupData();
 
-      $view = $this->file($this->getViewFolder() . $file . VIEWEXTENSION, $vars);
+      if (strpos(substr($file, -1*(strlen(VIEWEXTENSION)+1)),'.') === FALSE)
+         $file .= VIEWEXTENSION;
+
+      $view = $this->file($this->getViewFolder() . $file, $vars);
       //$view = $file . PHP_EOL;
 
       if (!empty($this->layout)) {
@@ -101,6 +107,13 @@ class Load {
 
    private function getViewFolder(){
       return Config::getInstance()->views;
+   }
+
+   private function getEmailsFolder(){
+      if (!empty(Config::getInstance()->email) && !empty(Config::getInstance()->email->templates))
+         return Config::getInstance()->email->templates;
+      else
+         return $this->getViewFolder() . 'emails/';
    }
 
    public function model($route){

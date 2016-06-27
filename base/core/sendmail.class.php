@@ -26,10 +26,10 @@ class SendMail extends \PHPMailer {
    function __construct() {
       parent::__construct();
 
-      if (empty(Config::$email))
+      if (empty(Config::getInstance()->email))
          throw new \Exception('Configurações de e-mail não informada', 14);
       else
-         $this->config = Config::$email;
+         $this->config = Config::getInstance()->email;
 
       if (!empty($this->config->debug) && $this->config->debug)
          $this->SMTPDebug  = 2; 

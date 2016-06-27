@@ -160,7 +160,10 @@ class Request {
 
       $this->headers = getallheaders();
 
-      $this->url = $_SERVER['REQUEST_SCHEME'] . '://' .$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+      if (!empty($_SERVER['SCRIPT_URI']))
+        $this->url = $_SERVER['SCRIPT_URI'];
+      else
+        $this->url = $_SERVER['REQUEST_SCHEME'] . '://' .$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 
       $this->uri = '/' . trim(!empty($_GET['URI']) ? $_GET['URI'] : str_replace(Config::getInstance()->url, '', $this->url), '/');
 
@@ -314,7 +317,7 @@ class Request {
     */
    public function session($key, $value = NULL){
       if (is_null($value))
-         return empty($_SESSION[$key]) ? NULL : $_SESSION[$key];
+         return !isset($_SESSION[$key]) ? NULL : $_SESSION[$key];
       else 
          return $this->session[$key] = $_SESSION[$key] = $value;
       
