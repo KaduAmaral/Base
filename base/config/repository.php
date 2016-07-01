@@ -42,7 +42,12 @@ function getProtocol(){
    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 }
 
-
+/**
+ * Replace a list array (find=>replace) into a string
+ * @param $array
+ * @param $string
+ * @return mixed
+ */
 function str_a_replace($array, $string) {
    foreach ($array as $from => $to)
       $string = str_replace($from, $to, $string);
