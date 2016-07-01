@@ -48,7 +48,7 @@ English
 ------------------------------------------------------------------------
 
 
-# Base & ndash; 1.0.0-alpha.5.1.2
+# Base &ndash; 1.0.0-alpha.5.1.2
 
 Base is a "base" for building solutions in MVC with PHP.
 Build the _framework_ for their own use, but decided to make available 
@@ -89,4 +89,4 @@ the main ones:
 
 ## License
 
-The _Framwork_ is available through the **Apache License 2.0**.
+The _Framework_ is available through the **Apache License 2.0**.
