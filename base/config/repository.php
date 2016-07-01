@@ -25,7 +25,7 @@ function objectify($array){
  * @return The value mapped to $key or null if none
  */
 function array_remove(array &$arr, $key) {
-   if (array_key_exists($key, $arr)) {
+   if (isset($arr[$key])) {
       $val = $arr[$key];
       unset($arr[$key]);
       return $val;
@@ -34,9 +34,14 @@ function array_remove(array &$arr, $key) {
    return NULL;
 }
 
+/**
+ * Returns Protocol 'https://' or 'http://' from current server
+ * @return string
+ */
 function getProtocol(){
    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 }
+
 
 function str_a_replace($array, $string) {
    foreach ($array as $from => $to)
