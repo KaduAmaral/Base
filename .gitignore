@@ -53,3 +53,8 @@ Temporary Items
 # =========================
 # PhpStorm
 .idea/
+.idea/Base.iml
+.idea/copyright/
+.idea/misc.xml
+.idea/modules.xml
+.idea/workspace.xml
