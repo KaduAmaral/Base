@@ -21,7 +21,7 @@ function search_lib($lib, $file, $ds = '/'){
     }
 
     if (is_dir($lib)){
-
+         $path = isset($path) ? $path : "";
          $path = cleanPath($lib, $path, $ds);
 
          $autoloadlog .= 'Lib: ' . (is_array($lib) ? implode(', ', $lib) : $lib) . PHP_EOL . 
