@@ -19,7 +19,7 @@ class ExceptionsList extends ArrayIterator {
    }
 
    public function exception($name, $args = NULL) {
-      return new "\\Core\Exception\\{$name}"
+      return new "\\Core\Exception\\{$name}";
    }
 
 } 
