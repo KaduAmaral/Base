@@ -7,7 +7,7 @@ use Core\Routes\Router;
 */
 class Controller {
    public $outputreturn = TRUE;
-   private $output = '';
+   public $output = '';
 
    public $router;
    public $route;
