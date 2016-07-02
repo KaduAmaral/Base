@@ -14,7 +14,7 @@ use \Core\Config;
  * English:
  *
  * Set the application by setting the name and URL
- * Other settings are also posible like connection to the bank,
+ * Other settings are also posible like connection to the database,
  * E-mail settings, etc.
  **/
 
