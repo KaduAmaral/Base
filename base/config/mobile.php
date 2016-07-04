@@ -1,6 +1,6 @@
 <?php
 
-   $detect = New \Addons\MobileDetect\MobileDetect();
+   $detect = New \Detection\MobileDetect();
 
    define('MOBILE', $detect->isMobile());
    define('TABLET', $detect->isTablet()); 
