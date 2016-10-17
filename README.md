@@ -1,4 +1,4 @@
-# Base &ndash; 1.0.0-alpha.5.1.3b
+# Base &ndash; 1.0.0-beta
 
 Base é uma "base" para construção de soluções em MVC com PHP. 
 Construi o _framework_ para uso próprio, porém resolvi disponibilizar 
