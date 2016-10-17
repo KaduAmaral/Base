@@ -220,7 +220,7 @@ class Config {
       if (is_null($value) && !$setnull) 
          return $this->appconfigs[$prop];
 
-      $this->appconfigs[$prop] = $value;
+      $this->appconfigs[$prop] = objectify($value);
    }
 
 
@@ -340,6 +340,8 @@ class Config {
    public function __isset($key) {
       if (isset($this->{$key})) {
          return (FALSE === empty($this->{$key}));
+      } else if (isset($this->appconfigs[$key])) {
+         return (FALSE === empty($this->appconfigs[$key]));   
       } else {
          return NULL;
       }
