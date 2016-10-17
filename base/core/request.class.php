@@ -196,7 +196,13 @@ class Request {
    public function parseRoute(){
       $this->params = new \stdClass();
 
-      $uri = explode('/', trim($this->uri, '/'));
+      $uri = $this->uri;
+
+      if (strpos($uri, '?') > -1) {
+        $uri = substr($uri, 0, strpos($uri, '?'));
+      }
+
+      $uri = explode('/', trim($uri, '/'));
 
       $this->controller = count($uri) > 0 ? array_shift($uri) : 'Main';
 
