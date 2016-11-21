@@ -7,11 +7,25 @@ use \Core\Connection;
 */
 class Model {
 
+   /**
+    * @var Connection
+    */
    public static $connection;
+
+   /**
+    * @var Controller
+    */
    public static $controller;
+
+   /**
+    * @var string
+    */
    private $__error = NULL;
 
-   
+   /**
+    * Model constructor.
+    * @param array $data
+    */
    function __construct($data = []) {
       if (!empty($data)) {
         $this->_preLoad($data);
@@ -19,6 +33,10 @@ class Model {
       }
    }
 
+   /**
+    * Sincroniza os dados do Model com o Banco de Dados
+    * @return bool
+    */
    public function refresh() {
       $data = self::getWhere($this->_getPKValue(), TRUE, FALSE);
       if (!empty($data) && is_array($data)) {
@@ -30,6 +48,9 @@ class Model {
       
    }
 
+   /**
+    * @param array $data
+    */
    public function _preLoad($data) {
       $pk = self::_getPK();
       if (!is_array($pk)) $pk = [$pk];
@@ -50,6 +71,9 @@ class Model {
 
    }
 
+   /**
+    * @param array $data
+    */
    private function _setData($data) {
       if (!empty($data)){
 
@@ -65,8 +89,7 @@ class Model {
 
    /**
     * Set the static method with current connection
-    * @param Connection $connection 
-    * @return void
+    * @param Connection $connection
     */
    public static function _setConnection(Connection $connection) {
       self::$connection = $connection;
@@ -121,11 +144,19 @@ class Model {
 
    /**
     * Get register by ID
-    * @param string/int $id 
+    * @param string|int $id
     * @return Model
     */
    public static function getById($id) {
       return self::getByColunm(self::_getPK(), $id);
+   }
+
+   /**
+    * @param string|int $id
+    * @return Model
+    */
+   public static function find($id) {
+      return self::getById($id);
    }
 
    /**
@@ -139,8 +170,17 @@ class Model {
    }
 
    /**
+    * @param string $colunm
+    * @param mixed $value
+    * @return Model
+    */
+   public static function findBy($colunm, $value) {
+      return self::getByColunm($colunm, $value);
+   }
+
+   /**
     * Get All registers 
-    * @return Array(Model)
+    * @return array
     */
    public static function getAll() {
       return self::getWhere(NULL);
@@ -148,8 +188,8 @@ class Model {
 
    /**
     * Get registers 
-    * @param array/string $where (i.e: ['colunm'=>'value', 'colunm2' => 'value2'] || "colunm = 'value' AND colunm2 = 'value2") 
-    * @return Array(Model)
+    * @param array|string $where (i.e: ['colunm'=>'value', 'colunm2' => 'value2'] || "colunm = 'value' AND colunm2 = 'value2")
+    * @return array
     */
    public static function getWhere($where, $shift = TRUE, $setobj = TRUE) {
       $stmt = self::$connection->select( self::_getReference(), $where );

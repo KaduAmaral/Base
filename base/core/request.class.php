@@ -8,86 +8,73 @@ use \Core\Routes\Router;
 * Request
 */
 class Request {
-   
+
+   /**
+    * @var Request
+    */
    static private $instance;
 
    /**
-    * @var array<string, string>
-    * 
-    * POST da requisição.
-    * 
+    * Dados de POST da Requisição
+    * @var array
     */
    public $post;
 
    /**
-    * @var array<string, string>
-    * 
-    * GET da requisição
-    * 
+    * Dados de GET da Requisição
+    * @var array
     */
    public $get;
 
    /**
-    * @var array<string, string>
-    * 
-    * REQUEST da requisiçã (POST e GET)
-    * 
+    * Dados de REQUEST da Requisição
+    * @var array
     */
    public $request;
 
    /**
-    * @var array<string|int, mixin>
-    * 
-    * Sessão
-    * 
+    * Dados da Sessão da Requisição
+    * @var array
     */
    public $session;
 
    /**
-    * @var array<string, string>
-    * 
-    * Cabeçalhos da requisição
+    * Cabeçalhos da Requisição
+    * @var array
     */
    public $headers;
 
    /**
+    * Identifica se requisição é ajax
+    *
     * @var bool
-    * 
-    * Requisição AJAX
-    * 
     */
    public $ajax;
 
    /**
-    * @var string
-    * 
     * Método da requisição: GET, POST, etc...
-    * 
+    * @var string
     */
    public $method;
 
 
    /**
-    * @var undefined
-    * 
     * Não lembro para quê criei esta propriedade.
-    * 
+    *
+    * @deprecated
+    * @var undefined
     */
    public $target = NULL;
 
    /**
-    * @var string
-    * 
     * Controller responsável pela requisição. Este valor será modificado pelo Router::findRoute(Request)
-    * 
+    * @var string
     */
    public $controller;
 
    /**
-    * @var string
-    * 
     * Action responsável pela requisição. Este valor será modificado pelo Router::findRoute(Request)
-    * 
+    * @var string
     */
    public $action;
 

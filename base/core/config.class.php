@@ -7,47 +7,56 @@ namespace Core;
 class Config {
 
    /**
-    * @var \Core\Config - Instância do objeto Config
+    * Instância do objeto Config
+    * @var Config
     */
    private static $instance;
 
    /**
-    * @var array - Configurações padrão
+    * Configurações padrão
+    * @var array
     */
    protected $defaults = [];
 
    /**
-    * @var array - Configurações setadas
+    * Configurações setadas
+    * @var array
     */
    protected $settings = [];
 
    /**
-    * @var string - Idioma
+    * Idioma
+    * @var string
     */
    protected $lang;
 
    /**
-    * @var string - Diretório da aplicação
+    * Diretório da aplicação
+    * @var string
     */
    protected $dir;
 
    /**
-    * @var string - Nome da aplicação
+    * Nome da aplicação
+    * @var string
     */
    protected $name;
 
    /**
-    * @var string - Diretório das Views
+    * Diretório das Views
+    * @var string
     */
    protected $views;
 
    /**
-    * @var string - Diretório dos Models
+    * Diretório dos Models
+    * @var string
     */
    protected $models;
 
    /**
-    * @var string - Diretório dos Controllers
+    * Diretório dos Controllers
+    * @var string
     */
    protected $controllers;
 
@@ -64,12 +73,14 @@ class Config {
    protected $email;
 
    /**
-    * @var array - Configurações de Autenticação
+    * Configurações de Autenticação
+    * @var array
     */
    protected $authentication;
 
    /**
-    * @var array - Configurações de Banco de Dados
+    * Configurações de Banco de Dados
+    * @var array
     */
    protected $database;
 
@@ -79,14 +90,16 @@ class Config {
    protected $appconfigs;
 
    /**
-    * @var book - Usar sistema de rotas 
-    * 
+    * Usar sistema de rotas
+    * @var bool
+    *
     * @default TRUE
     */
-   protected $useroutes;
+   protected $useroutes = TRUE;
 
    /**
-    * @var bool - Não parsear URL caso não encontre a rota (url/controller/action)
+    * Não parsear URL caso não encontre a rota (url/controller/action)
+    * @var bool
     */
    protected $onlyroutes;
 
@@ -95,10 +108,8 @@ class Config {
     * Nome do diretório do aplicativo (caso esteja no diretório padrão /apps/<nome>/) 
     * ou caminho completo do diretório
     * 
-    * @param string $dir 
-    * 
-    * @return Config
-    * 
+    * Config constructor.
+    * @param array $defaults
     */
    function __construct($defaults = []) {
 
@@ -113,9 +124,9 @@ class Config {
    }
 
    /**
-    * Seta as
-    * @param type $app 
-    * @return type
+    * @param $app string
+    * @return Config
+    * @throws Exception\InvalidApplicationException
     */
    public static function SetApplication($app) {
 
@@ -141,8 +152,7 @@ class Config {
 
    /**
     * Seta as configurações
-    * @param array $configs Configurações
-    * @return void
+    * @param array $configs
     */
    public function Configure(array $configs) {
       //var_dump($configs);
@@ -154,13 +164,23 @@ class Config {
       }
    }
 
+   /**
+    * Seta configurações
+    * @param array $settings
+    */
    public static function Set(array $settings = []) {
       if (empty($settings))
          $settings = self::$instance->defaults;
       self::$instance->settings = array_merge_recursive(self::$instance->settings, $settings);
       self::$instance->Configure($settings);
+
    }
 
+   /**
+    * Retornar diretório da aplicação
+    * @param string $app
+    * @return string
+    */
    private static function getAppDir($app = NULL) {
 
       if (is_null($app) && !empty(self::$instance))
@@ -187,8 +207,8 @@ class Config {
 
    /**
     * Seta propriedades padrões
-    * @param array $defaults - Array de propriedades
-    * @return array - Propriedades padrões
+    * @param array $defaults
+    * @return array
     */
    private function defaults(array $defaults = []) {
       return $this->defaults = array_merge_recursive([
@@ -205,10 +225,10 @@ class Config {
 
    /**
     * Seta configurações da aplicação
-    * @param string $prop - Nome da propriedade
-    * @param mixin|null $value - Se o valor for NULL retorna o valor da propriedade setada.
-    * @param bool $setnull - Se o valor for TRUE, vai setar o valor mesmo que seja NULL
-    * @return mixin
+    * @param $prop
+    * @param mixed $value
+    * @param bool $setnull
+    * @return mixed
     */
    public function appconfigs($prop, $value = NULL, $setnull = FALSE) {
       if (!is_array($this->appconfigs))

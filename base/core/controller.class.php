@@ -6,22 +6,64 @@ use Core\Routes\Router;
 * Controller
 */
 class Controller {
+
+   /**
+    * Identifica se é pra imprimir o retorno ou não.
+    * @var bool
+    */
    public $outputreturn = TRUE;
+
+   /**
+    * Output a ser impresso
+    * @var string
+    */
    public $output = '';
 
+   /**
+    * @var Router
+    */
    public $router;
+
+   /**
+    * @var Router
+    */
    public $route;
+
+   /**
+    * @var Request
+    */
    public $request;
+
+   /**
+    * @var array
+    */
    public $cache = [];
+
+   /**
+    * @var Load
+    */
    protected $load;
+
+   /**
+    * @var Model
+    */
    protected $model;
+
+   /**
+    * @var Config
+    */
    protected $config;
 
+   /**
+    * @var Connection
+    */
    public static $connection = NULL;
 
+   /**
+    * Controller constructor.
+    * @param Request|NULL $request
+    */
    function __construct(Request $request = NULL) {
-
-      //$this->request = New Request();
 
       $this->request = is_null($request) ? Request::getInstance() : $request;
       $this->config  = Config::getInstance();
@@ -32,13 +74,17 @@ class Controller {
 
       $this->startConnection();
 
-      $controller = get_class($this);
-
       $this->checkPermission();
 
       Model::$controller = $this;
    }
 
+   /**
+    * Executa o controlador. Em breve será papel do Dispatch
+    * @param mixed $param
+    * @return string
+    * @throws Exception
+    */
    public function execute($param = NULL){
 
       if (!is_callable([$this, $this->request->action]))
@@ -49,6 +95,14 @@ class Controller {
       return call_user_func_array([$this, $this->request->action], (array) $param);
    }
 
+   /**
+    * Executa um determinado controller
+    * @param string $controller Nome do Controller
+    * @param string $action Método do Controller
+    * @param array $args Argumentos para o Controller
+    * @return mixed
+    * @throws Exception
+    */
    public function controller($controller, $action = 'index', $args = NULL) {
 
       $class = "\\Controller\\{$controller}Controller";
