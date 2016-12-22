@@ -1,0 +1,8 @@
+title: Base - PHP MVC Framework
+description: "Base é um framework \"base\" para construção de soluções em MVC com PHP. "
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-cayman
+
+gems:
+  - jekyll-mentions
