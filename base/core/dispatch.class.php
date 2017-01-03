@@ -1,8 +1,10 @@
 <?php
 namespace Core;
 
-use \Core\Request;
+use Core\Exception\InvalidPropertyException;
 use \Core\Routes\Router;
+use \Core\Routes\Route;
+
 
 /**
 * 
@@ -10,13 +12,85 @@ use \Core\Routes\Router;
 
 class Dispatch {
 
-   public function __invoke(Route $route = NULL) {
-      $router = Router::getInstance();
+   private static $request;
+   private static $config;
+   private static $router;
+   private static $route;
+   private static $app;
+   private static $params = [];
+   private static $output = '';
 
-      if (is_null($route))
-         $route = $router->GetByRequest();
-
-      return call_user_func_array([$route->getController(), $route->action], $route->attributes);
+   public static function fire() {
+      self::initialize();
+      self::findRoute();
+      self::prepare();
+      self::execute();
+      self::rprint();
    }
+
+   private static function prepare() {
+      $class = self::$route->getControllerName();
+
+      if (!class_exists($class) )
+         throw new Exception('A URL '.self::$request->uri.' é inválida.');
+
+      self::$app = New $class();
+
+      if (!!self::$route && count(self::$route->attributes) > 0) {
+         $ref = new \ReflectionMethod(self::$app, self::$route->action);
+
+         $parameters = $ref->getParameters();
+
+         foreach ($parameters as $parameter) {
+
+            if (!isset(self::$route->attributes[$parameter->getName()])) {
+
+               if (!$parameter->isOptional())
+                  throw new InvalidPropertyException('A propriedade "'.$parameter->getName().'" não está declarada na rota.');
+
+               self::$params[$parameter->getPosition()] = $parameter->getDefaultValue();
+               continue;
+            }
+
+
+            self::$params[$parameter->getPosition()] = self::$route->attributes[$parameter->getName()];
+
+         }
+      }
+   }
+
+   private static function execute() {
+      try {
+         self::$output = call_user_func_array([self::$app, self::$route->action], self::$params);
+      } catch (\Exception $e) {
+         throw $e;
+      }
+   }
+
+   private static function rprint() {
+      if (self::$app->outputreturn)
+         self::$app->setOutput( self::$output );
+
+      self::$app->output();
+   }
+
+
+
+   private static function initialize() {
+      self::$request = Request::getInstance();
+      self::$config = Config::getInstance();
+      self::$router = Router::getInstance();
+   }
+
+   private static function findRoute() {
+      self::$route = self::$router->match();
+      if (self::$config->onlyroutes && !self::$route) {
+         self::$route = Router::notfound();
+      }
+
+      if (!self::$route)
+         self::$route = self::$request->getRouteByRequest();
+   }
+
 
 }

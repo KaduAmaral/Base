@@ -3,6 +3,7 @@ namespace Core;
 
 use \Core\Request;
 use \Core\Config;
+use \Core\Dispatch;
 use \Core\Routes\Router;
 use \Core\Exception\InvalidApplicationException;
 /**
@@ -12,92 +13,42 @@ use \Core\Exception\InvalidApplicationException;
 
 class Application {
 
+   private static $config;
+
    public static function RUN($application) {
 
       try {
-         $config = Config::SetApplication($application);
+         self::$config = Config::SetApplication($application);
 
-         if (is_readable($config->dir . 'config.php'))
-            require_once $config->dir . 'config.php';
+         self::loadConfigs();
 
       } catch (InvalidApplicationException $e) {
          echo self::Error($e->getMessage());
          return FALSE;
       }
 
-      $request = Request::getInstance();
-
-      // Router em implementação
-      $router = Router::getInstance();
-
-      $route = $router->GetByRequest();
-
-      if ($config->onlyroutes && !$route) {
-        $route = Router::notfound();
-      }
-
-      if ($route) {
-         $request->controller = $route->controller;
-         $request->action = $route->action;
-         $request->params = (object) $route->attributes;
-      } else {
-         $request->parseRoute();
-      }
-
-      $class = "\\Controller\\{$request->controller}Controller";
-
-      // Retorno caso configuração $outputreturn do controller seja true
-
-      $output = '';
-
       try {
-
-         if (!class_exists($class) )
-            throw new Exception("A URL {$request->uri} é inválida.");
-
-         $app = New $class();
-
-      } catch (Exception $e) {
-         echo self::Error( $e->getMessage() );
-         return FALSE;
-      }
-
-
-      if ( !empty($request->post['mvc:model']) ) {
-
-         $model = '\Model\\' . array_remove($request->post, 'mvc:model') . 'Model';
-
-         try {
-            $param = New $model($request->post);
-
-            if ($param)
-               $param = [$param];
-
-         } catch (Exception $e) {
-            $app->setOutput($app->index());
-            $app->output();
-            return FALSE;
-         }
-      } else if (!!$route && count($route->attributes) > 0)
-         $param = $route->attributes;
-      else if ( empty($request->lost) && !is_numeric($request->lost) )
-         $param = NULL;
-      else
-         $param = [$request->lost];
-
-      try {
-         $output = $app->execute($param);
-      } catch (Exception $e) {
+         Dispatch::fire();
+         
+         
+      } catch (\Exception $e) {
          echo self::Error($e->getMessage());
          return FALSE;
       }
 
-      if ($app->outputreturn)
-         $app->setOutput( $output );
-
-      $app->output();
-
       return TRUE;
+   }
+   
+   private static function loadConfigs() {
+      $configFiles = ['config.php', 'routes.php', 'constants.php'];
+
+      foreach ($configFiles as $configFile)
+         self::loadConfigFile($configFile);
+   }
+
+   private static function loadConfigFile($file) {
+      if (is_readable(self::$config->dir . $file))
+         require_once self::$config->dir . $file;
    }
 
 

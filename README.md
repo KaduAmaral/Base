@@ -1,4 +1,4 @@
-# Base &ndash; 1.0.0-beta
+# Base &ndash; 1.0.1-beta
 
 Base é uma "base" para construção de soluções em MVC com PHP. 
 Construi o _framework_ para uso próprio, porém resolvi disponibilizar 
@@ -48,7 +48,7 @@ English
 ------------------------------------------------------------------------
 
 
-# Base &ndash; 1.0.0-alpha.5.1.2
+# Base &ndash; 1.0.1-beta
 
 Base is a "base" for building solutions in MVC with PHP.
 Build the _framework_ for their own use, but decided to make available 

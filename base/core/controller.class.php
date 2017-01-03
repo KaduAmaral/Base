@@ -50,6 +50,11 @@ class Controller {
    protected $model;
 
    /**
+    * @var array
+    */
+   protected $services = [];
+
+   /**
     * @var Config
     */
    protected $config;
@@ -78,6 +83,47 @@ class Controller {
 
       Model::$controller = $this;
    }
+
+   /**
+    * @param string $name
+    * @return Service
+    */
+   protected function service($name, $args = []) {
+      if (isset($this->services[ strtolower($name) ])) return $this->services[ strtolower($name) ];
+
+      try {
+         $service = $this->loadClass($name, "\\Services\\", 'Service', $args);
+      } catch (\Exception $e) {
+         throw new \InvalidArgumentException('O serviço informado não existe.');
+      }
+      return $this->services[ strtolower($name) ] = $service;
+   }
+
+   /**
+    * @param string $name
+    * @return mixed
+    */
+   protected function handle($name) {
+      $data = !empty($this->request->post[$name]) ? $this->request->post[$name] : [];
+      return $this->loadClass($name, "\\Model\\", "Model", $data);
+   }
+
+   /**
+    * @param string $name
+    * @param string $namespace
+    * @param string $sufix
+    * @param array  $args
+    * @return mixed
+    */
+   private function loadClass($name, $namespace = "\\", $sufix = "", $args = []) {
+      $class = $namespace . $name . $sufix;
+
+      if (!class_exists($class))
+         throw new \InvalidArgumentException('A classe informada não existe');
+
+      return new $class(...$args);
+   }
+
 
    /**
     * Executa o controlador. Em breve será papel do Dispatch

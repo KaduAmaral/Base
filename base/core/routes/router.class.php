@@ -272,7 +272,7 @@ class Router {
       return NULL;
    }
 
-   public function GetByRequest() {
+   public function match() {
       $matcher = $this->matcher;
 
       $route = $matcher(self::$request, self::$routes);

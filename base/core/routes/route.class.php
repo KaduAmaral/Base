@@ -1,5 +1,7 @@
 <?php
 namespace Core\Routes;
+use Core\Exception\InvalidPropertyException;
+
 /**
 * 
 */
@@ -215,9 +217,9 @@ class Route {
     * 
     * Seta os parâmetros
     * 
-    * @param type $params 
+    * @param array $params
     * 
-    * @return type
+    * @return Route
     * 
     */
    public function params($params) {
@@ -230,9 +232,9 @@ class Route {
     * 
     * Seta os parâmetros
     * 
-    * @param type $attributes 
+    * @param array $attributes
     * 
-    * @return type
+    * @return Route
     * 
     */
    public function attributes($attributes) {
@@ -297,10 +299,12 @@ class Route {
     * 
     */
    public function controller($controller) {
+      $controller = str_replace(':', '\\', $controller);
       $this->setImutableProperty('controller', $controller);
+      if (!$this->checkControllerIsValid())
+         throw new InvalidPropertyException('O controller informado é inválido.');
       return $this;
    }
-
 
    /**
     * 
@@ -334,7 +338,7 @@ class Route {
 
    /**
     * 
-    * Seta o controller
+    * Seta o host
     * 
     * @param string $controller
     * 
@@ -399,15 +403,34 @@ class Route {
    }
 
    /**
-    * 
+    *
     * Retorna o controller da rota
-    * 
+    *
     * @return Controller
-    * 
+    *
     */
    public function getController() {
-      $controller = "\Controller\{$this->controller}Controller";
+      $controller = $this->getControllerName();
       return New $controller();
+   }
+
+   /**
+    *
+    * Retorna o nome do controller da rota
+    *
+    * @return string
+    *
+    */
+   public function getControllerName($namespace = TRUE) {
+      if (!$namespace) return $this->controller;
+      return "\\Controller\\{$this->controller}Controller";
+   }
+
+   /**
+    * @return mixed
+    */
+   public function checkControllerIsValid() {
+      return class_exists($this->getControllerName());
    }
 
    /**

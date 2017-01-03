@@ -283,7 +283,7 @@ class Config {
       if (empty($value))
          throw new \InvalidArgumentException('Não é possível setar a propriedade "url" para um valor vazio.');
 
-      $this->url = $value;
+      $this->url = strtolower($value);
    }
 
    /**

@@ -66,7 +66,7 @@ class Matcher {
 
 
    public function routeMatched(Route $route, $name, $path) {
-      $this->log .= "{$path} MATCHED ON {$name}" . PHP_EOL;
+      $this->log($name, $path, 'SUCCESS');
       $this->matchedRoute = $route;
       return $route;
    }
@@ -80,8 +80,15 @@ class Matcher {
          $this->failedScore = $score;
       }
 
-      $this->log .= "{$path} FAILED {$ruleClass} ON {$name}" . PHP_EOL;
-
+      $this->log($name, $path, 'FAIL', $ruleClass);
       return FALSE;
     }
+
+   private function log($name, $path, $status, $rule = '') {
+      $this->log .= "{
+      target: {$name}
+      path: {$path} 
+      status: {$status}
+      rule: {$rule}" . PHP_EOL . '}'.PHP_EOL;
+   }
 }

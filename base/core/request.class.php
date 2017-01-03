@@ -9,6 +9,17 @@ use \Core\Routes\Router;
 */
 class Request {
 
+   const METHOD_HEAD = 'HEAD';
+   const METHOD_GET = 'GET';
+   const METHOD_POST = 'POST';
+   const METHOD_PUT = 'PUT';
+   const METHOD_PATCH = 'PATCH';
+   const METHOD_DELETE = 'DELETE';
+   const METHOD_PURGE = 'PURGE';
+   const METHOD_OPTIONS = 'OPTIONS';
+   const METHOD_TRACE = 'TRACE';
+   const METHOD_CONNECT = 'CONNECT';
+
    /**
     * @var Request
     */
@@ -129,6 +140,11 @@ class Request {
    public $uri;
 
    /**
+    * @var string
+    */
+   public $queryString;
+
+   /**
     * Construtor
     * @return void
     */
@@ -150,9 +166,14 @@ class Request {
       if (!empty($_SERVER['SCRIPT_URI']))
         $this->url = $_SERVER['SCRIPT_URI'];
       else
-        $this->url = $_SERVER['REQUEST_SCHEME'] . '://' .$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+
+        $this->url = strtolower($_SERVER['REQUEST_SCHEME'] . '://' .$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
 
       $this->uri = '/' . trim(!empty($_GET['URI']) ? $_GET['URI'] : str_replace(Config::getInstance()->url, '', $this->url), '/');
+
+      $this->queryString = strpos($this->uri, '?') > -1 ? substr($this->uri, strpos($this->uri, '?')+1) : null;
+
+      $this->uri = strpos($this->uri, '?') > -1 ? substr($this->uri, 0, strpos($this->uri, '?')) : $this->uri;
 
       self::$instance = $this;
    }
@@ -178,16 +199,12 @@ class Request {
     * Realiza o parser da requisição
     * @return void
     * 
-    * OBS: Deprecated 
+    * @deprecated
     */
    public function parseRoute(){
       $this->params = new \stdClass();
 
       $uri = $this->uri;
-
-      if (strpos($uri, '?') > -1) {
-        $uri = substr($uri, 0, strpos($uri, '?'));
-      }
 
       $uri = explode('/', trim($uri, '/'));
 
@@ -208,7 +225,20 @@ class Request {
 
          $this->lost = $key;
       }
+   }
 
+   public function getRouteByRequest() {
+      $this->parseRoute();
+      
+      $r = \Core\Routes\Router::get($this->uri, 'request_runtime_route', [
+          'controller' => $this->controller,
+          'action' => $this->action
+      ]);
+
+      if  ($this->params)
+         $r->params( (array) $this->params )->attributes( (array) $this->params );
+
+      return $r;
    }
 
 
