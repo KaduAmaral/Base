@@ -70,3 +70,4 @@ Temporary Items
 /.idea/markdown-navigator
 /.idea/base.iml
 /.idea/blade.xml
+/app/example/routes.cache.php

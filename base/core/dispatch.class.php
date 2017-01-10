@@ -2,6 +2,7 @@
 namespace Core;
 
 use Core\Exception\InvalidPropertyException;
+use core\routes\Annotation;
 use \Core\Routes\Router;
 use \Core\Routes\Route;
 
@@ -15,21 +16,26 @@ class Dispatch {
    private static $request;
    private static $config;
    private static $router;
+   private static $annotation;
    private static $route;
    private static $app;
    private static $params = [];
    private static $output = '';
 
    public static function fire() {
-      self::initialize();
-      self::findRoute();
-      self::prepare();
-      self::execute();
-      self::rprint();
+      try {
+         self::initialize();
+         self::findRoute();
+         self::prepare();
+         self::execute();
+         self::rprint();
+      } catch (\Exception $e) {
+         throw $e;
+      }
    }
 
    private static function prepare() {
-      $class = self::$route->getControllerName();
+      $class = self::$route->getController();
 
       if (!class_exists($class) )
          throw new Exception('A URL '.self::$request->uri.' é inválida.');
@@ -80,6 +86,13 @@ class Dispatch {
       self::$request = Request::getInstance();
       self::$config = Config::getInstance();
       self::$router = Router::getInstance();
+      try {
+         self::$annotation = new Annotation();
+      } catch (\Exception $e) {
+         throw $e;
+      }
+
+
    }
 
    private static function findRoute() {

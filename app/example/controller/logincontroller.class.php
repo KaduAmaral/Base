@@ -2,21 +2,26 @@
 namespace Controller;
 
 use \Core\Controller;
-/**
-* 
-*/
+
+
 class LoginController extends Controller
 {
-   
+
+   /**
+    * @Route("/entrar", "name":"entrar")
+    */
    function index() {
       return $this->load->view('layouts/default', [
          'content' => '<div class="container"><div class="col-xs-12 col-sm-6 col-sm-offset-3">'.
-         '<div class="page-header"><h1>Entrar</h1></div>'.
-         $this->load->view('commons/login-form').
-         '</div></div>'
+            '<div class="page-header"><h1>Entrar</h1></div>'.
+            $this->load->view('commons/login-form').
+            '</div></div>'
       ]);
    }
 
+   /**
+    * @Route("/login", "name":"login")
+    */
    function login() {
       return $this->load->content(
          '%header% %menu%'.
@@ -33,4 +38,4 @@ class LoginController extends Controller
          )
       );
    }
-} 
+}

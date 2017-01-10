@@ -40,7 +40,7 @@ class Application {
    }
    
    private static function loadConfigs() {
-      $configFiles = ['config.php', 'routes.php', 'constants.php'];
+      $configFiles = ['constants.php', 'config.php', 'routes.php', 'routes.cache.php'];
 
       foreach ($configFiles as $configFile)
          self::loadConfigFile($configFile);

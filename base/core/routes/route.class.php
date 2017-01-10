@@ -193,7 +193,7 @@ class Route {
     * 
     */
    public function allows($allows) {
-      $this->allows = array_merge($this->allows, (array) $allows);
+      $this->allows = array_merge($this->allows, is_string($allows)?explode('|', $allows):(array)$allows);
       return $this;
    }
 
@@ -307,13 +307,13 @@ class Route {
    }
 
    /**
-    * 
+    *
     * Seta o action
-    * 
+    *
     * @param string $action
-    * 
+    *
     * @return Route
-    * 
+    *
     */
    public function action($action) {
       $this->setImutableProperty('action', $action);
@@ -404,33 +404,21 @@ class Route {
 
    /**
     *
-    * Retorna o controller da rota
-    *
-    * @return Controller
-    *
-    */
-   public function getController() {
-      $controller = $this->getControllerName();
-      return New $controller();
-   }
-
-   /**
-    *
-    * Retorna o nome do controller da rota
+    * Retorna o nome do controller
     *
     * @return string
     *
     */
-   public function getControllerName($namespace = TRUE) {
-      if (!$namespace) return $this->controller;
-      return "\\Controller\\{$this->controller}Controller";
+   public function getController() {
+      return $this->controller;
    }
+
 
    /**
     * @return mixed
     */
    public function checkControllerIsValid() {
-      return class_exists($this->getControllerName());
+      return class_exists($this->getController());
    }
 
    /**
