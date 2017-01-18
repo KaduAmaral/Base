@@ -1,3 +1,13 @@
+# 1.1.1
+
+Rotas por annotation devem obrigatoriamente ter os parâmetros em formato JSON, Ex:
+
+    @Route("/post/:id", {"name":"post", "params":{"id":"\d+"}})
+
+# 1.1.0
+
+Lançado primeira Release com a implementação das Rotas por Annotation
+
 # 1.1.0-beta
 
 Implementado Rotas por Annotation
