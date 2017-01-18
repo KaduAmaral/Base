@@ -8,7 +8,7 @@ class LoginController extends Controller
 {
 
    /**
-    * @Route("/entrar", "name":"entrar")
+    * @Route("/entrar", {"name":"entrar"})
     */
    function index() {
       return $this->load->view('layouts/default', [
@@ -20,7 +20,7 @@ class LoginController extends Controller
    }
 
    /**
-    * @Route("/login", "name":"login")
+    * @Route("/login", {"name":"login"})
     */
    function login() {
       return $this->load->content(

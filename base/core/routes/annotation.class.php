@@ -1,6 +1,6 @@
 <?php
-namespace core\routes;
 
+namespace Core\Routes;
 
 use Core\Config;
 
@@ -210,10 +210,10 @@ class Annotation {
       if (empty($string))
          return NULL;
 
-      $json = json_decode('{'.$string.'}', true);
+      $json = json_decode($string, true);
 
       if (is_null($json))
-         throw new \InvalidArgumentException('Os parâmetros informados é inválido.');
+         throw new \InvalidArgumentException('Os parâmetros devem estar em um formato JSON válido.');
 
       return $json;
 

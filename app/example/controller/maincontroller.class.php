@@ -9,7 +9,7 @@ use \Core\Controller;
 class MainController extends Controller {
 
    /**
-    * @Route("/", "name":"index", "allows":"GET|POST")
+    * @Route("/", {"name":"index", "allows":"GET|POST"})
     * @return mixed
     */
    public function index(){
@@ -18,7 +18,7 @@ class MainController extends Controller {
 
    /**
     *
-    * @Route("/post/:id", "params":{"id":"\d+"})
+    * @Route("/post/:id", {"params":{"id":"\d+"}})
     *
     * @param $id
     * @param string $nome
@@ -30,7 +30,7 @@ class MainController extends Controller {
 
 
    /**
-    * @Route("/acao/:slug", "name":"acao", "params":{"slug":"[a-zA-Z0-9\-_]"})
+    * @Route("/acao/:slug", {"name":"acao", "params":{"slug":"[a-zA-Z0-9\-_]"}})
     * 
     * @param $slug
     * @return string
@@ -40,7 +40,7 @@ class MainController extends Controller {
    }
 
    /**
-    * @Route("/post/:date/:slug", "params":{"date":"[0-9]{2}-[0-9]{2}-[0-9]{4}", "slug":"[a-zA-Z0-9\-_]"})
+    * @Route("/post/:date/:slug", {"params":{"date":"[0-9]{2}-[0-9]{2}-[0-9]{4}", "slug":"[a-zA-Z0-9\-_]"}})
     *
     * @param $date
     * @param $slug
