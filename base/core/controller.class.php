@@ -1,10 +1,11 @@
 <?php
 namespace Core;
 
+use Core\Routes\Route;
 use Core\Routes\Router;
 /**
-* Controller
-*/
+ * Controller
+ */
 class Controller {
 
    /**
@@ -68,13 +69,13 @@ class Controller {
     * Controller constructor.
     * @param Request|NULL $request
     */
-   function __construct(Request $request = NULL) {
+   function __construct(Request $request, Route $route) {
 
-      $this->request = is_null($request) ? Request::getInstance() : $request;
+      $this->request =  $request;
       $this->config  = Config::getInstance();
 
       $this->router   = New Router();
-      $this->route = $this->router;
+      $this->route = $route;
       $this->load    = New Load();
 
       $this->startConnection();
@@ -157,11 +158,18 @@ class Controller {
 
          $request = clone $this->request;
 
+
          $request->controller = $controller;
          $request->action = $action;
          $request->params = $args;
 
-         $app = New $class($request);
+         $route = New Route("/{$controller}/{$action}", [
+            'controller' => $class,
+            'action'    => $action,
+            'params' => $args
+         ]);
+
+         $app = New $class($request, $route);
 
          if (method_exists($app, $action)) {
             if (is_array($args) && count($args) > 0)
@@ -189,22 +197,26 @@ class Controller {
          $check = $authentication->method;
 
          if (
-            !empty($this->config->authentication->notcheckon) && 
-            !empty($this->config->authentication->notcheckon->{strtolower($this->request->controller)}) &&
+            !empty($this->config->authentication->notcheckon) &&
+            !empty($this->config->authentication->notcheckon->{$this->route->getController()}) &&
             (
-               $this->config->authentication->notcheckon->{strtolower($this->request->controller)} === '*' ||
-               in_array($this->request->action, (array)$this->config->authentication->notcheckon->{strtolower($this->request->controller)})
+               $this->config->authentication->notcheckon->{$this->route->getController()} === '*' ||
+               in_array($this->route->action, (array)$this->config->authentication->notcheckon->{$this->route->getController()})
             )
          ) {
             return TRUE;
          }
 
-         if (FALSE && $this->request->controller == 'error') {
-            var_dump($this->request->controller);
-            echo '\n\n';
+         if (FALSE && $this->route->getController() == 'error') {
+
+            echo "\n\n";
+            var_dump($this->route->getController());
+            echo "\n\n";
             var_dump($this->config->authentication->notcheckon);
+            echo "\n\n";
+            var_dump($this->config->authentication->notcheckon->{$this->route->getController()} === '*');
             exit;
-            
+
          }
 
 

@@ -3,15 +3,15 @@ namespace Core\Routes;
 use Core\Exception\InvalidPropertyException;
 
 /**
-* 
-*/
+ *
+ */
 class Route {
 
    private $defaults = [];
 
    /**
     * Rota
-    * 
+    *
     * @var string
     */
    protected $route;
@@ -23,56 +23,56 @@ class Route {
 
    /**
     * Padrão da Rota
-    * 
+    *
     * @var string: regex
     */
    protected $pattern;
 
    /**
     * Idioma
-    * 
+    *
     * @var string: 'pt-br'
-    * 
+    *
     */
    protected $lang;
 
    /**
     * Host
-    * 
+    *
     * @var string: url | domain
     */
    protected $host;
 
    /**
     * Controller da Rota
-    * 
+    *
     * @var string
-    * 
+    *
     */
    protected $controller;
 
    /**
     * Action da Rota
-    * 
+    *
     * @var string
-    * 
+    *
     */
    protected $action;
 
 
    /**
     * Regras da Rota
-    * 
+    *
     * @var array<RouteRule>
-    * 
+    *
     */
    protected $rules = [];
 
    /**
     * Handler
-    * 
+    *
     * @var function
-    * 
+    *
     * @default function( [ mixin $params [, ...]] ) use (Controller $controller, Request $request){
     *             return $controller->{$request->getAction()}();
     *          }
@@ -82,7 +82,7 @@ class Route {
    /**
     * Métodos Permitidos
     * @var array<string>
-    * 
+    *
     */
    private $allows = [];
 
@@ -97,15 +97,15 @@ class Route {
    private $attributes = [];
 
    /**
-    * 
+    *
     * Construtor
-    * 
+    *
     * @param string $route Rota, i.e.: /artigo/:name
-    * 
+    *
     * @param array|null $options Configuraçõe da Rota
-    * 
+    *
     * @return void
-    * 
+    *
     */
    public function __construct($host, $options = NULL) {
       if (is_null($options)) $options = [];
@@ -131,13 +131,13 @@ class Route {
    }
 
    /**
-    * 
+    *
     * Seta as configurações da Rota
-    * 
-    * @param array<string, mixin> $options 
-    * 
+    *
+    * @param array<string, mixin> $options
+    *
     * @return Route
-    * 
+    *
     */
    public function settings($options) {
       if (empty($options))
@@ -158,10 +158,10 @@ class Route {
 
 
    /**
-     *
-     * Quando a rota for clonada, reseta os parâmetros `$params` para os padrões.
-     *
-     */
+    *
+    * Quando a rota for clonada, reseta os parâmetros `$params` para os padrões.
+    *
+    */
    public function __clone() {
       // $this é a instância clonada, não a original
       // $this->name = NULL;
@@ -184,13 +184,13 @@ class Route {
 
 
    /**
-    * 
+    *
     * Seta os métodos permitidos
-    * 
-    * @param string|array $allows 
-    * 
+    *
+    * @param string|array $allows
+    *
     * @return Route
-    * 
+    *
     */
    public function allows($allows) {
       $this->allows = array_merge($this->allows, is_string($allows)?explode('|', $allows):(array)$allows);
@@ -199,13 +199,13 @@ class Route {
 
 
    /**
-    * 
+    *
     * Seta os métodos permitidos
-    * 
-    * @param callable|function|object $allows 
-    * 
+    *
+    * @param callable|function|object $allows
+    *
     * @return Route
-    * 
+    *
     */
    public function rules($rule) {
       $this->rules = array_merge($this->rules, (array) $rule);
@@ -214,13 +214,13 @@ class Route {
 
 
    /**
-    * 
+    *
     * Seta os parâmetros
-    * 
+    *
     * @param array $params
-    * 
+    *
     * @return Route
-    * 
+    *
     */
    public function params($params) {
       $this->params = array_merge($this->params, (array) $params);
@@ -229,13 +229,13 @@ class Route {
    }
 
    /**
-    * 
+    *
     * Seta os parâmetros
-    * 
+    *
     * @param array $attributes
-    * 
+    *
     * @return Route
-    * 
+    *
     */
    public function attributes($attributes) {
       $this->attributes = array_merge($this->attributes, (array) $attributes);
@@ -245,13 +245,13 @@ class Route {
    /* Propriedades Imutáveis */
 
    /**
-    * 
+    *
     * Seta a rota
-    * 
-    * @param  string $route 
-    * 
+    *
+    * @param  string $route
+    *
     * @return Route
-    * 
+    *
     */
    public function route($route) {
       $this->setImutableProperty('route', $route);
@@ -259,13 +259,13 @@ class Route {
    }
 
    /**
-    * 
+    *
     * Seta a rota
-    * 
-    * @param  string $name 
-    * 
+    *
+    * @param  string $name
+    *
     * @return Route
-    * 
+    *
     */
    public function name($name) {
       $this->setImutableProperty('name', $name);
@@ -274,13 +274,13 @@ class Route {
 
 
    /**
-    * 
+    *
     * Seta a rota
-    * 
-    * @param  string $route 
-    * 
+    *
+    * @param  string $route
+    *
     * @return Route
-    * 
+    *
     */
    public function pattern($value) {
       $pattern = '/^' . str_replace('/', '\/', $value) . '$/';
@@ -290,13 +290,13 @@ class Route {
 
 
    /**
-    * 
+    *
     * Seta o controller
-    * 
+    *
     * @param string $controller
-    * 
+    *
     * @return Route
-    * 
+    *
     */
    public function controller($controller) {
       $controller = str_replace(':', '\\', $controller);
@@ -322,13 +322,13 @@ class Route {
 
 
    /**
-    * 
+    *
     * Seta o idioma
-    * 
+    *
     * @param string $lang: 'pt-br' | 'pt-pt' | 'en-us'
-    * 
+    *
     * @return Route
-    * 
+    *
     */
    public function lang($lang) {
       $this->setImutableProperty('lang', $lang);
@@ -337,13 +337,13 @@ class Route {
 
 
    /**
-    * 
+    *
     * Seta o host
-    * 
-    * @param string $controller
-    * 
+    *
+    * @param string $host
+    *
     * @return Route
-    * 
+    *
     */
    public function host($host) {
       $this->setImutableProperty('host', $host);
@@ -352,24 +352,24 @@ class Route {
 
    public function setHost() {
       $host = $this->route;
-      
+
       if (!empty($this->params))
          foreach ($this->params as $param => $ex)
             $host = str_replace(":{$param}", $ex, $host);
-      
+
 
       return $this->host($host);
 
    }
 
    /**
-    * 
+    *
     * Seta o Handler, função de execução
-    * 
-    * @param function $handler 
-    * 
+    *
+    * @param function $handler
+    *
     * @return Route
-    * 
+    *
     */
    public function handler($handler) {
       if (is_callable($handler))
@@ -381,25 +381,25 @@ class Route {
    }
 
    /**
-    * 
+    *
     * Seta uma variável imutável
-    * 
-    * @param string $prop 
-    * 
-    * @param mixin $value 
-    * 
+    *
+    * @param string $prop
+    *
+    * @param mixin $value
+    *
     * @return Route
-    * 
+    *
     */
    private function setImutableProperty($prop, $value) {
-     if ($this->$prop !== null) {
+      if ($this->$prop !== null) {
          $message = __CLASS__ . '::$'.$prop.' é imutavel uma vez setada.';
          throw new \Core\Exception\ImmutablePropertyException($message);
-     }
+      }
 
-     $this->$prop = $value;
+      $this->$prop = $value;
 
-     return $this;
+      return $this;
    }
 
    /**
@@ -422,13 +422,13 @@ class Route {
    }
 
    /**
-    * 
+    *
     * Retorna o valor de uma propriedade
-    * 
-    * @param string $key 
-    * 
+    *
+    * @param string $key
+    *
     * @return mixin
-    * 
+    *
     */
    public function __get($key) {
       return $this->{$key};
