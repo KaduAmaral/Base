@@ -54,7 +54,9 @@ class Application {
 
    private static function Error($message = NULL) {
       if (class_exists('\\Controller\\ErrorController')) {
-         $app = New \Controller\ErrorController(Request::getInstance());
+         $router = Router::getInstance();
+
+         $app = New \Controller\ErrorController(Request::getInstance(), $router->notfound());
          return $app->index($message);
       } else {
          return 'Error: '.$message;

@@ -1,4 +1,4 @@
-# Base &ndash; 1.1.1
+# Base &ndash; 1.1.1b
 
 Base é uma "base" para construção de soluções em MVC com PHP. 
 Construi o _framework_ para uso próprio, porém resolvi disponibilizar 

@@ -1,3 +1,7 @@
+# 1.1.1b
+
+Correção na instanciação do Controller
+
 # 1.1.1
 
 Rotas por annotation devem obrigatoriamente ter os parâmetros em formato JSON, Ex:

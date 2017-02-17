@@ -122,7 +122,10 @@ class Controller {
       if (!class_exists($class))
          throw new \InvalidArgumentException('A classe informada não existe');
 
-      return new $class(...$args);
+      $class = new \ReflectionClass($class);
+
+      return $class->newInstanceArgs($args);
+      //return new $class(...$args);
    }
 
 
