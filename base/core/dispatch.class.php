@@ -40,7 +40,7 @@ class Dispatch {
       if (!class_exists($class) )
          throw new Exception('A URL '.self::$request->uri.' é inválida.');
 
-      self::$app = New $class();
+      self::$app = New $class(self::$request, self::$route);
 
       if (!!self::$route && count(self::$route->attributes) > 0) {
          $ref = new \ReflectionMethod(self::$app, self::$route->action);
