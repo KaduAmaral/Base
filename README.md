@@ -48,7 +48,7 @@ English
 ------------------------------------------------------------------------
 
 
-# Base &ndash; 1.1.1
+# Base
 
 Base is a "base" for building solutions in MVC with PHP.
 Build the _framework_ for their own use, but decided to make available 
