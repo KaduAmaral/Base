@@ -176,7 +176,7 @@ class Annotation {
       $doc = explode("\n", $doc);
       foreach ($doc as $line) {
          $line = trim($line, ' /*');
-         $match = preg_match('/\@Route(\s+)?\(\"?([a-zA-Z\:\/]+)\"(.*)?\)/', $line, $matches );
+         $match = preg_match('/\@Route(\s+)?\(\"?([a-zA-Z0-9\:\/\-_]+)\"(.*)?\)/', $line, $matches );
          if (0 < $match)
             break;
       }
