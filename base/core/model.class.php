@@ -8,6 +8,21 @@ use \Core\Connection;
 class Model {
 
    /**
+    * Caso só tenha 1 resultado, não remove do array
+    */
+   const NO_SHIFT_RESULT = 1;
+
+   /**
+    * Mantém o resultado como array, e não seta para objeto
+    */
+   const NO_SET_OBJECT = 2;
+
+   /**
+    * Mantém o index de cada row como sequencial
+    */
+   const NO_SET_ID_AS_INDEX = 4;
+
+   /**
     * @var Connection
     */
    public static $connection;
@@ -144,19 +159,23 @@ class Model {
 
    /**
     * Get register by ID
+    * @deprecated 1.1.2 Use Model::find($id) instead
     * @param string|int $id
+    * @param integer $flags
     * @return Model
     */
-   public static function getById($id) {
-      return self::getByColunm(self::_getPK(), $id);
+   public static function getById($id, $flags = 0) {
+      return self::find($id, $flags);
    }
 
    /**
+    * Find a result by ID
     * @param string|int $id
+    * @param integer $flags
     * @return Model
     */
-   public static function find($id) {
-      return self::getById($id);
+   public static function find($id, $flags = 0) {
+      return self::getByColunm(self::_getPK(), $id, $flags);
    }
 
    /**
@@ -165,8 +184,8 @@ class Model {
     * @param string/int $value 
     * @return Model
     */
-   public static function getByColunm($colunm, $value) {
-      return self::getWhere([$colunm => $value]);
+   public static function getByColunm($colunm, $value, $flags = 0) {
+      return self::getWhere([$colunm => $value], $flags);
    }
 
    /**
@@ -174,40 +193,85 @@ class Model {
     * @param mixed $value
     * @return Model
     */
-   public static function findBy($colunm, $value) {
-      return self::getByColunm($colunm, $value);
+   public static function findBy($colunm, $value, $flags = 0) {
+      return self::getByColunm($colunm, $value, $flags);
    }
 
    /**
     * Get All registers 
     * @return array
     */
-   public static function getAll() {
-      return self::getWhere(NULL);
+   public static function getAll($flags = 0) {
+      return self::getWhere(NULL, $flags);
    }
 
    /**
     * Get registers 
     * @param array|string $where (i.e: ['colunm'=>'value', 'colunm2' => 'value2'] || "colunm = 'value' AND colunm2 = 'value2")
+    * @param @deprecated bool $shift Use as $flags instead
+    * @param @deprecated bool $setobj
+    * @param integer $flags
     * @return array
     */
-   public static function getWhere($where, $shift = TRUE, $setobj = TRUE) {
+   public static function getWhere($where, $shift = TRUE, $setobj = TRUE, $flags = 0) {
       $stmt = self::$connection->select( self::_getReference(), $where );
       $res = $stmt->execute();
 
+      if (is_int($shift)) {
+         $flags = $shift;
+         
+      } else {
+         $flags += $shift ? 0 : 1;
+         $flags += $setobj ? 0 : 2;
+      }
+
+      $flagsResult = $flags > 0 ? self::calcFlags($flags) : self::getFlags();
+
+      
+      
+
       $rows = array();
       $pk = self::_getPK();
+      /*
+      NO_SET_OBJECT
+      NO_SHIFT_RESULT
+      */
       while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
          if (is_array($pk))
-            $rows[] = ($setobj ? new static($row) : $row);
-         else 
-            $rows[ $row[ $pk ] ] = ($setobj ? new static($row) : $row);
+            $rows[] = ($flagsResult['NO_SET_OBJECT'] ? $row : new static($row));
+         else {
+            $k = $flagsResult['NO_SET_ID_AS_INDEX'] ? count($rows) : $row[ $pk ] ;
+            $rows[ $k ] = ($flagsResult['NO_SET_OBJECT'] ? $row : new static($row));
+         }
+            
       }
 
       if (count($rows) == 0)
          return NULL;
 
-      return ((count($rows) == 1 && $shift) ? array_shift($rows) : $rows);
+      return ((count($rows) == 1 && !$flagsResult['NO_SHIFT_RESULT']) ? array_shift($rows) : $rows);
+   }
+
+   private static function calcFlags($flags) {
+      $result = self::getFlags();
+
+      foreach ($result as $key => $flag) {
+         $val = constant('self::'.$key);
+         if ($val <= $flags) {
+            $result[$key] = TRUE;
+            $flags -= $val;
+         }
+      }
+      
+      return $result;
+   }
+
+   private static function getFlags() {
+      return [
+         'NO_SET_OBJECT' => FALSE,
+         'NO_SHIFT_RESULT' => FALSE,
+         'NO_SET_ID_AS_INDEX' => FALSE
+      ];
    }
 
    /**
@@ -327,8 +391,8 @@ class Model {
          if (array_key_exists('created', $data))
             $data['created'] = Date('Y-m-d H:i:s');
 
-          if (array_key_exists('modified', $data))
-            unset($data['modified']);
+          if (array_key_exists('updated', $data))
+            unset($data['updated']);
 
 
          $res = self::$connection->insert($reference, $data)->execute();
@@ -338,8 +402,8 @@ class Model {
 
       } else {
 
-         if (array_key_exists('modified', $data))
-            $data['modified'] = Date('Y-m-d H:i:s');
+         if (array_key_exists('updated', $data))
+            $data['updated'] = Date('Y-m-d H:i:s');
 
          if (array_key_exists('created', $data))
             unset($data['created']);
