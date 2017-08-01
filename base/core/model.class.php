@@ -333,14 +333,9 @@ class Model {
 
          $res = self::$connection->insert($reference, $data)->execute();
 
-         if ($res && $pk !== NULL && !is_array($pk)) {
+         if ($res && $pk !== NULL && !is_array($pk))
             $this->{'set'.$pk}(self::$connection->lastInsertId());
-         }
 
-
-         $this->afterSave($res);
-
-         return $res;
       } else {
 
          if (array_key_exists('modified', $data))
@@ -351,10 +346,14 @@ class Model {
 
          $res = self::$connection->update($reference, $data, $_pkv)->execute();
 
-         $this->afterSave($res);
-
-         return $res;
       }
+
+      if ($res)
+         $this->refresh();
+
+      $this->afterSave($res);
+
+      return $res;
 
    }
    
