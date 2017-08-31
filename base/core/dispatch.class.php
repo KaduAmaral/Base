@@ -7,10 +7,6 @@ use \Core\Routes\Router;
 use \Core\Routes\Route;
 
 
-/**
-* 
-*/
-
 class Dispatch {
 
    private static $request;

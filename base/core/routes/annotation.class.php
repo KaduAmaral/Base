@@ -2,7 +2,7 @@
 
 namespace Core\Routes;
 
-use Core\Config;
+use \Core\Config;
 
 class Annotation {
 

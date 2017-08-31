@@ -102,6 +102,17 @@ class Model {
       }
    }
 
+   public function __toArray() {
+      $data = [];
+
+      foreach(get_object_vars($this) as $key => $val) {
+         if (strpos($key, '_') !== 0)
+            $data[$key] = $val;
+      }
+
+      return $data;
+   }
+
    /**
     * Set the static method with current connection
     * @param Connection $connection
@@ -226,9 +237,6 @@ class Model {
       }
 
       $flagsResult = $flags > 0 ? self::calcFlags($flags) : self::getFlags();
-
-      
-      
 
       $rows = array();
       $pk = self::_getPK();

@@ -75,6 +75,10 @@ spl_autoload_register(
       if (defined('APP'))
          $libs[] = APP;
 
+      if (defined('SOURCES'))
+         $libs = array_merge($libs, (gettype(SOURCES) == 'array' ? SOURCES : [SOURCES]));
+      
+
       $ext  = '.class.php';
       $debug = !TRUE;
 
