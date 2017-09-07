@@ -1,0 +1,71 @@
+<?php
+
+include '../vendor/autoload.php';
+include './config/constants.php';
+include './config/autoload.php';
+
+$cmd = new CMP\Console();
+
+function myErrorHandler($errno, $errstr, $errfile, $errline) {
+   global $cmd;
+   $description = '';
+    switch ($errno) {
+      case E_ERROR:
+      case E_CORE_ERROR:
+      case E_COMPILE_ERROR:
+      case E_USER_ERROR:
+         $description = "<error> ERROR </error> $errstr\n";
+         $description .= "  Fatal error on line <info>$errline</info> in file <info>$errfile</info>";
+         $description .= ", PHP " . PHP_VERSION . " (" . PHP_OS . ")\n";
+         $description .= "Aborting...\n";
+         exit(1);
+         break;
+
+      case E_WARNING:
+      case E_USER_WARNING:
+         $description = "<warning> WARNING </warning> $errstr\n";
+         $description .= "  on line <info>$errline</info> in file <info>$errfile</info>";
+         $description .= ", PHP " . PHP_VERSION . " (" . PHP_OS . ")\n";
+         break;
+
+      case E_NOTICE:
+      case E_USER_NOTICE:
+      $description = "<warning> NOTICE </warning> $errstr\n";
+      $description .= "  on line <info>$errline</info> in file <info>$errfile</info>";
+      $description .= ", PHP " . PHP_VERSION . " (" . PHP_OS . ")\n";
+         break;
+
+      default:
+      return false;
+         break;
+    }
+
+    $cmd->writeln($description);
+    /* Don't execute PHP internal error handler */
+    return true;
+}
+
+$old_error_handler = set_error_handler("myErrorHandler");
+
+function fatal_handler() {
+   $errfile = "unknown file";
+   $errstr  = "shutdown";
+   $errno   = E_CORE_ERROR;
+   $errline = 0;
+
+   $error = error_get_last();
+
+   if( $error !== NULL) {
+        $errno   = $error["type"];
+        $errfile = $error["file"];
+        $errline = $error["line"];
+        $errstr  = $error["message"];
+   }
+   return myErrorHandler($errno, $errstr, $errfile, $errline);
+}
+
+register_shutdown_function( "fatal_handler" );
+
+$cmd->register('build', new \Console\Commands\Build);
+
+$cmd->run();

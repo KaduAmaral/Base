@@ -212,7 +212,7 @@ class Config {
     */
    private function defaults(array $defaults = []) {
       return $this->defaults = array_merge_recursive([
-         'url' => $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'],
+         'url' => php_sapi_name() != "cli" ? $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'] : getcwd(),
          'lang' => 'pt-br',
          'views' => $defaults['dir'].'view'.DS,
          'useroutes' => TRUE,

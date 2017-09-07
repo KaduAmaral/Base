@@ -3,6 +3,7 @@
 namespace Core;
 
 use \Core\Routes\Router;
+use \Core\Request\Globals;
 
 /**
 * Request
@@ -24,6 +25,13 @@ class Request {
     * @var Request
     */
    static private $instance;
+
+   /**
+    * Variávels globais;
+    *
+    * @var array
+    */
+   public $globals;
 
    /**
     * Dados de POST da Requisição
@@ -153,6 +161,8 @@ class Request {
          session_start();
 
       $this->method = $_SERVER['REQUEST_METHOD'];
+
+      $this->globals = new Globals();
 
       $this->setVar('post');
       $this->setVar('get');
