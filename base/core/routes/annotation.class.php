@@ -55,7 +55,7 @@ class Annotation {
       $controllers = rtrim($this->config->controllers  ?: ($this->config->dir . 'controller'), '/ ') . '/';
 
       if (!is_dir($controllers))
-         throw new \InvalidArgumentException('O diretório de Controllers não foi configurado corretamente.');
+         throw new \InvalidArgumentException("O diretório de Controllers não foi configurado corretamente `{$controllers}`.");
 
       $files = scandir($controllers);
 

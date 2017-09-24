@@ -302,7 +302,7 @@ class Route {
       $controller = str_replace(':', '\\', $controller);
       $this->setImutableProperty('controller', $controller);
       if (!$this->checkControllerIsValid())
-         throw new InvalidPropertyException('O controller informado é inválido.');
+         throw new InvalidPropertyException('O controller informado é inválido: '.$controller);
       return $this;
    }
 
