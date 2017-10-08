@@ -1,8 +1,6 @@
 <?php
-
-include '../vendor/autoload.php';
-include './config/constants.php';
-include './config/autoload.php';
+include dirname(__DIR__).'/vendor/autoload.php';
+include __DIR__.'/config/loader.php';
 
 $cmd = new CMP\Console();
 
@@ -66,6 +64,14 @@ function fatal_handler() {
 
 register_shutdown_function( "fatal_handler" );
 
+$cmd->register('environment', new \Console\Commands\Environment);
+$cmd->register('dump-routes', new \Console\Commands\DumpRoutes);
+$cmd->alias('environment', 'env');
 $cmd->register('build', new \Console\Commands\Build);
 
-$cmd->run();
+
+try {
+   $cmd->run();
+} catch (\Exception $e) {
+   $cmd->writeln("Exception: <error>{$e->getMessage()}</error>");
+}

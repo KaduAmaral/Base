@@ -11,7 +11,7 @@ Options -Indexes
 
 RewriteEngine On
 
-RewriteBase /Base/public_html/
+RewriteBase /base/public_html/
 
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
