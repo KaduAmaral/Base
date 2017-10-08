@@ -19,6 +19,7 @@ use \Core\Config;
 
 
 Config::Set([
-   'url' => 'http://localhost/Base/public_html/',
+   'url' => 'http://localhost/base/public_html/',
+   'public' => dirname(dirname(__DIR__)).'/public_html',
    'name' => 'example',
 ]);

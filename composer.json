@@ -19,6 +19,6 @@
         "kaduamaral/connectionpdo": "~1.1",
         "phpmailer/phpmailer": "~5.2",
         "mobiledetect/mobiledetectlib": "~2.8",
-        "kaduamaral/cmp": "^1.1"
+        "kaduamaral/cmp": "^1.1.4"
     }
 }

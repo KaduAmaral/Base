@@ -28,15 +28,15 @@ class Environment extends \CMP\Command\Command {
    private function setArgs($args) {
       $this->app = $args['--app'];
       $this->env = $args['--env'];
-      $this->appPath = APPS.$this->app.DS;
+      $this->appPath = APPS.$this->app;
 
    }
 
    private function copyConfig() {
      $this->console->writeln('Setting config file...');
-     $path = "{$this->appPath}config.{$this->env}.php";
+     $path = "{$this->appPath}/environments/{$this->env}.php";
       if (file_exists($path))
-         copy($path, "{$this->appPath}config.php");
+         copy($path, "{$this->appPath}/config.php");
       else
          throw new \Exception('Config file does\'t exists for environment '.$this->env);
    }
@@ -50,7 +50,8 @@ class Environment extends \CMP\Command\Command {
      if (file_exists($path))
         copy($path, $newPath);
      else
-        throw new \Exception('HTACCESS file does\'t exists for environment '.$this->env);
+        $this->console->writeln("<error>HTACCESS file does\'t exists for environment {$this->env}</error>");
+        // throw new \Exception('HTACCESS file does\'t exists for environment '.$this->env);
    }
 
    private function configure() {
@@ -62,7 +63,7 @@ class Environment extends \CMP\Command\Command {
 
       if (is_null($this->config = $this->console->share('config'))) {
         $this->config = $this->console->share('config', \Core\Config::SetApplication($this->appPath));
-        $this->loadFile($this->appPath.'config.php');
+        $this->loadFile($this->appPath.'/config.php');
       }
 
       return TRUE;
@@ -78,7 +79,7 @@ class Environment extends \CMP\Command\Command {
    public function getOptionCollection() {
       $collection = new \CMP\Command\OptionCollection();
       $collection->add('a|app:', 'Application folder name');
-      $collection->add('e|env:', 'Environment [prod|dev] (default: dev)', 'dev');
+      $collection->add('e|env:', 'Environment [prod|dev|stage] (default: dev)', 'dev');
 
       return $collection;
    }
