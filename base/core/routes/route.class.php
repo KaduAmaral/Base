@@ -44,6 +44,11 @@ class Route {
    protected $host;
 
    /**
+    * @var string
+    */
+   protected $base;
+
+   /**
     * Controller da Rota
     *
     * @var string
@@ -360,6 +365,15 @@ class Route {
 
       return $this->host($host);
 
+   }
+
+   /**
+    * @param $base string
+    * @return $this
+    */
+   public function base($base) {
+      $this->base = $base;
+      return $this;
    }
 
    /**

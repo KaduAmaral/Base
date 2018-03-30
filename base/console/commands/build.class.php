@@ -15,6 +15,8 @@ class Build extends \CMP\Command\Command {
 
       $this->build();
 
+      $this->console->writeln('<success>Successful build!</success>');
+
       return TRUE;
    }
 

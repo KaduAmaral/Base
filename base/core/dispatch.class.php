@@ -20,7 +20,6 @@ class Dispatch {
 
    public static function fire() {
       try {
-         self::initialize();
          self::findRoute();
          self::prepare();
          self::execute();
@@ -78,7 +77,7 @@ class Dispatch {
 
 
 
-   private static function initialize() {
+   public static function initialize() {
       self::$request = Request::getInstance();
       self::$config = Config::getInstance();
       self::$router = Router::getInstance();

@@ -47,14 +47,16 @@ class Host implements RuleInterface {
          $matches
       );
 
-      // if ($this->route->host != '/404') {
-      //   echo $this->route->host . ' <br>' . PHP_EOL;
-      //   echo $this->regex . ' <br>' . PHP_EOL;
-      //   echo $request->uri . ' <br>' . PHP_EOL;
-      //   var_dump($matches);
-      //   echo PHP_EOL.'<br><br><br>'.PHP_EOL;
-      //   exit;
-      // }
+//      if ($this->route->host != '/404') {
+//         echo '<div style="background-color:white;padding:15px;margin:10px;font-family:monospace;">';
+//         echo 'BASE: ' . $this->route->base . ' <br>' . PHP_EOL;
+//         echo 'HOST: ' . $this->route->host . ' <br>' . PHP_EOL;
+//         echo 'REGX: ' . $this->regex . ' <br>' . PHP_EOL;
+//         echo 'URI : ' . $request->uri . ' <br>' . PHP_EOL;
+//         var_dump($matches);
+//         echo "</div>";
+////         exit;
+//      }
 
       if (!$match)
          return FALSE;
@@ -94,7 +96,8 @@ class Host implements RuleInterface {
    protected function buildRegex(Route $route) {
       $this->route = $route;
       $this->regex = $this->setParams( str_replace('.', '\\.', $this->route->host) );
-      $this->regex = '#^' . $this->regex . '$#';
+
+      $this->regex = '#^' . $route->base . '/' . trim($this->regex, '/') . '$#';
       return $this->regex;
    }
 

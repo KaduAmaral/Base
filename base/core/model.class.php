@@ -89,7 +89,7 @@ class Model {
    /**
     * @param array $data
     */
-   private function _setData($data) {
+   public function _setData($data) {
       if (!empty($data)){
 
          foreach ($data as $field => $value){
@@ -132,7 +132,8 @@ class Model {
          $class = strtolower(get_called_class());
          $class = explode('\\', $class);
          $class = end($class);
-         $reference = substr($class, 0, strlen($class) - strlen('model'));
+         // $reference = substr($class, 0, strlen($class) - strlen('model'));
+         $reference = $class;
       }
 
       return $reference;

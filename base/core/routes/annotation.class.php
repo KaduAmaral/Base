@@ -23,22 +23,6 @@ class Annotation {
       if (!is_null($className)) $this->go($className);
 
       $this->config = Config::getInstance();
-
-
-      try {
-         if (!file_exists($this->config->dir . 'routes.cache.php'))
-            $this->dump();
-      } catch (\Exception $e) {
-         throw $e;
-      }
-
-      $this->loadAnnotationsCache();
-   }
-
-   private function loadAnnotationsCache() {
-      $file = $this->config->dir . 'routes.cache.php';
-      if (file_exists($file) && is_readable($file))
-      include_once $file;
    }
 
    public function go($className) {
@@ -52,26 +36,37 @@ class Annotation {
    }
 
    public function dump() {
-      $controllers = rtrim($this->config->controllers  ?: ($this->config->dir . 'controller'), '/ ') . '/';
+      $controllers = $this->path($this->config->controllers  ?: ($this->config->dir . 'controller'));
 
       if (!is_dir($controllers))
          throw new \InvalidArgumentException("O diretório de Controllers não foi configurado corretamente `{$controllers}`.");
 
-      $files = scandir($controllers);
+      $this->readFilesFromDir($controllers);
+      
 
+      $this->writeCacheFile();
+
+   }
+
+   private function path($path) {
+      return rtrim($path, '/ ') . '/';
+   }
+
+   private function readFilesFromDir($dir) {
+      $dir = $this->path($dir);
+      $files = array_diff(scandir($dir), ['.','..']);
 
       foreach ($files as $file) {
 
          try {
-            if (strpos($file, '.') != 0 && !is_dir($file) && is_file($controllers.$file))
-               $this->go($this->getClassNameFromFile($controllers.$file));
+            if (is_dir($dir.$file)) {
+               $this->readFilesFromDir($dir.$file);
+            } elseif (is_file($dir.$file))
+               $this->go($this->getClassNameFromFile($dir.$file));
          } catch (\Exception $e) {
             throw $e;
          }
       }
-
-      $this->writeCacheFile();
-
    }
 
    private function getClassNameFromFile($file) {

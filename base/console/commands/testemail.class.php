@@ -1,13 +1,13 @@
 <?php
 namespace Console\Commands;
 
-use Core\Routes\Router;
-
-class DumpRoutes extends \CMP\Command\Command {
+class TestEmail extends \CMP\Command\Command {
 
    private $console;
    private $config;
    private $app;
+   private $email;
+   private $debug;
    private $appPath;
 
    public function execute(\CMP\Console $console, $args = []) {
@@ -17,22 +17,35 @@ class DumpRoutes extends \CMP\Command\Command {
 
       $this->configure();
 
-      $this->dumpRoutesCache();
+      $this->sendEmail();
+
+      return TRUE;
    }
 
+   private function sendEmail() {
+      $this->console->writeln('Testing email for: '.$this->app);
+
+      $mail = new \Core\SendMail();
+
+      $mail->addAddress($this->email);
+
+      $this->SMTPDebug = $this->debug == 'y' ? 2 : 0; 
+
+
+      $mail->Subject = 'Testing Sendmail for '.$this->app;
+      $mail->msgHTML('<p>Hello, your e-mail config is setted correct!</p>');
+      if (!$mail->send())
+         $this->console->writeln("Mailer Error: <error>{$mail->ErrorInfo}</error>");
+     else
+         $this->console->writeln("<success>Mailer successful sended!</success>");
+
+   }
 
    private function setArgs($args) {
       $this->app = $args['--app'];
+      $this->email = $args['--email'];
+      $this->debug = $args['--debug'];
       $this->appPath = APPS.$this->app.DS;
-   }
-
-   private function dumpRoutesCache() {
-      $this->console->writeln('Dumping routes...');
-      Router::getInstance();
-      $annotation = new \Core\Routes\Annotation();
-      if (file_exists($this->appPath.'routes.cache.php'))
-            @unlink($this->appPath.'routes.cache.php');
-      $annotation->dump();
    }
 
    private function configure() {
@@ -60,9 +73,10 @@ class DumpRoutes extends \CMP\Command\Command {
    public function getOptionCollection() {
       $collection = new \CMP\Command\OptionCollection();
       $collection->add('a|app:', 'Application folder name');
+      $collection->add('e|email:', 'Destinatary e-mail');
+      $collection->add('d|debug:?', 'Debug PHPMailer [y|n]', 'n');
 
       return $collection;
    }
-
 
 }

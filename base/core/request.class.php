@@ -2,6 +2,7 @@
 
 namespace Core;
 
+use Core\Routes\Route;
 use \Core\Routes\Router;
 use \Core\Request\Globals;
 
@@ -153,14 +154,21 @@ class Request {
    public $queryString;
 
    /**
+    * @var string
+    */
+   public $body;
+
+   /**
     * Construtor
     * @return void
     */
    function __construct() {
-      if (session_status() == PHP_SESSION_NONE)
-         session_start();
+      self::$instance = $this;
 
-      $this->method = $_SERVER['REQUEST_METHOD'];
+      if (php_sapi_name() == "cli") {
+         return $this;
+      }
+
 
       $this->globals = new Globals();
 
@@ -171,22 +179,58 @@ class Request {
 
       $this->ajax = $this->isAjax();
 
-      $this->headers = getallheaders();
+      $this->headers = $this->loadHeaders();
 
       if (!empty($_SERVER['SCRIPT_URI']))
         $this->url = $_SERVER['SCRIPT_URI'];
       else
+        $this->url = strtolower($_SERVER['REQUEST_SCHEME'] . '://' .$_SERVER['SERVER_NAME']);
 
-        $this->url = strtolower($_SERVER['REQUEST_SCHEME'] . '://' .$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+      $this->uri = $_SERVER['REQUEST_URI'];
 
-      $this->uri = '/' . trim(!empty($_GET['URI']) ? $_GET['URI'] : str_replace(Config::getInstance()->url, '', $this->url), '/');
+      $baseuri = Config::getInstance()->base;
+      if (!empty($baseuri) && strpos($this->uri, $baseuri) === 0) {
+         $this->uri = substr($this->uri, 0, strlen($baseuri));
+      }
 
       $this->queryString = strpos($this->uri, '?') > -1 ? substr($this->uri, strpos($this->uri, '?')+1) : null;
 
       $this->uri = strpos($this->uri, '?') > -1 ? substr($this->uri, 0, strpos($this->uri, '?')) : $this->uri;
 
-      self::$instance = $this;
+      $this->loadBody();
+
+
    }
+
+   private function loadHeaders() {
+      if (function_exists('getallheaders')) {
+         return getallheaders();
+      } else {
+         if (!is_array($_SERVER)) {
+            return array();
+         }
+         $headers = array();
+         foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+               $key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+               $headers[$key] = $value;
+            }
+         }
+         return $headers;
+      }
+   }
+
+   public function loadBody() {
+      $this->body = file_get_contents('php://input');
+
+      if (
+         (!empty($this->headers['Content-Type']) && $this->headers['Content-Type'] == 'application/json') ||
+         (!empty($this->headers['X-Content-Type']) && $this->headers['X-Content-Type'] == 'application/json')
+      ) {
+         $this->body = json_decode($this->body, true);
+      }
+   }
+
 
 
    /**
@@ -263,23 +307,20 @@ class Request {
     */
    public function redirect($params = NULL){
 
-      if (empty($params))
-         return $this->header('Location: ' . Router::href());
-
-
-      if (is_string($params)) {
-         return $this->header('Location: ' . $params);
-      }
-
-      if (is_array($params)){
+      if (empty($params)){
+         $this->header('Location: ' . Router::href());
+      } else if (is_string($params)) {
+         $this->header('Location: ' . $params);
+      } else if (is_array($params)){
 
          $controller = empty($params['controller']) ? 'main' : $params['controller'];
          $action = empty($params['action']) ? 'index' : $params['action'];
 
-         return $this->header('Location: ' . Router::href("{$controller}/{$action}"));
-      } else 
-         return $this->header('Location: ' . Router::href());
-
+         $this->header('Location: ' . Router::href("{$controller}/{$action}"));
+      } else if ($params instanceof Route) {
+         $this->header('Location: ' . $params->setHost()->host);
+      } else
+         $this->header('Location: ' . Router::href());
 
       exit;
    }

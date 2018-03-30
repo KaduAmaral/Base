@@ -142,7 +142,7 @@ class Config {
          );
       }
 
-      return New self([
+      return new self([
          'name' => trim(str_replace(dirname($dir), '', $dir), '\/'),
          'dir'  => $dir
       ]);
@@ -213,6 +213,7 @@ class Config {
    private function defaults(array $defaults = []) {
       return $this->defaults = array_merge_recursive([
          'url' => php_sapi_name() != "cli" ? $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'] : getcwd(),
+         'base' => '',
          'lang' => 'pt-br',
          'views' => $defaults['dir'].'view'.DS,
          'useroutes' => TRUE,
@@ -278,12 +279,23 @@ class Config {
     * Seta o valor da configuração: url
     * @param string $value - Novo valor da configuração
     * @return void
+    *
+    * @deprecated Use base instead
     */
    public function url($value) {
       if (empty($value))
          throw new \InvalidArgumentException('Não é possível setar a propriedade "url" para um valor vazio.');
 
       $this->url = strtolower($value);
+   }
+
+   /**
+    * Seta o valor da configuração: url
+    * @param string $value - Novo valor da configuração
+    * @return void
+    */
+   public function base($value) {
+      $this->base = strtolower($value);
    }
 
    /**

@@ -53,11 +53,7 @@ class Router {
     */
    function __construct($routes = NULL) {
 
-      if (empty(self::$request))
-         self::$request = Request::getInstance();
-
-      if (empty(self::$config))
-         self::$config = Config::getInstance();
+      self::init();
 
       if (!empty($routes)) {
          if (is_array($routes))
@@ -67,10 +63,18 @@ class Router {
             self::register($routes);
       }
 
-      $this->matcher = New Matcher;
+      $this->matcher = new Matcher;
 
       self::$instance = $this;
 
+   }
+
+   private static function init() {
+      if (empty(self::$request))
+         self::$request = Request::getInstance();
+
+      if (empty(self::$config))
+         self::$config = Config::getInstance();
    }
 
    public static function main($options = NULL) {
@@ -130,6 +134,8 @@ class Router {
 
       if (is_null($route))
          return FALSE;
+
+      $route->base(self::$config->base);
 
       self::$routes->offsetSet($route->name, $route);
 
@@ -293,9 +299,9 @@ class Router {
       $uri = is_string($params) ? $params : self::_href($params);
 
       if (empty($uri))
-         return rtrim(self::$config->url, '/');
+         return rtrim(self::$config->base, '/');
 
-      $url = rtrim(self::$config->url, '/') . '/' . ltrim($params, '/');
+      $url = rtrim(self::$config->base, '/') . '/' . ltrim($params, '/');
 
       return $url;
    }

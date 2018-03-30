@@ -1,9 +1,6 @@
 <?php
 namespace Core;
 
-use \Core\Request;
-use \Core\Config;
-use \Core\Dispatch;
 use \Core\Routes\Router;
 use \Core\Exception\InvalidApplicationException;
 /**
@@ -19,6 +16,8 @@ class Application {
 
       try {
          self::$config = Config::SetApplication($application);
+
+         Dispatch::initialize();
 
          self::loadConfigs();
 
@@ -42,8 +41,10 @@ class Application {
    private static function loadConfigs() {
       $configFiles = ['constants.php', 'config.php', 'routes.php', 'routes.cache.php'];
 
-      foreach ($configFiles as $configFile)
+      foreach ($configFiles as $configFile) {
          self::loadConfigFile($configFile);
+      }
+
    }
 
    private static function loadConfigFile($file) {
@@ -56,7 +57,7 @@ class Application {
       if (class_exists('\\Controller\\ErrorController')) {
          $router = Router::getInstance();
 
-         $app = New \Controller\ErrorController(Request::getInstance(), $router->notfound());
+         $app = new \Controller\ErrorController(Request::getInstance(), $router->notfound());
          return $app->index($message);
       } else {
          return 'Error: '.$message;

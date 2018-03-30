@@ -3,6 +3,7 @@ namespace Core;
 
 use Core\Routes\Route;
 use Core\Routes\Router;
+
 /**
  * Controller
  */
@@ -34,6 +35,13 @@ class Controller {
     * @var Request
     */
    public $request;
+
+   /**
+    * Response Object
+    *
+    * @var \Core\Response
+    */
+   public $response;
 
    /**
     * @var array
@@ -72,6 +80,7 @@ class Controller {
    function __construct(Request $request, Route $route) {
 
       $this->request =  $request;
+      $this->response = Response::getInstance();
       $this->config  = Config::getInstance();
 
       $this->router   = New Router();
@@ -153,34 +162,33 @@ class Controller {
     * @return mixed
     * @throws Exception
     */
-   public function controller($controller, $action = 'index', $args = NULL) {
-
-      $class = "\\Controller\\{$controller}Controller";
-
+   public function controller($class, $action = 'index', $args = NULL) {
       if (class_exists($class)) {
 
          $request = clone $this->request;
 
 
-         $request->controller = $controller;
+         $request->controller = $class;
          $request->action = $action;
          $request->params = $args;
 
-         $route = New Route("/{$controller}/{$action}", [
+         $route = new Route("/some/fake/path/".time(), [
             'controller' => $class,
             'action'    => $action,
             'params' => $args
          ]);
 
-         $app = New $class($request, $route);
+         $app = new $class($request, $route);
 
          if (method_exists($app, $action)) {
             if (is_array($args) && count($args) > 0)
-               return call_user_func_array([$app, $action], $args);
+               call_user_func_array([$app, $action], $args);
             else
-               return $app->$action();
+               $app->$action();
+
+            return $app;
          } else {
-            throw new Exception('Requisição inválida.');
+            throw new Exception('Ação inválida.');
          }
 
       } else {
@@ -239,7 +247,7 @@ class Controller {
    }
 
    public function appendOutput($output) {
-      $this->output = $this->output . $output;
+      $this->output .= $output;
    }
 
    public function prependOutput($output) {
@@ -249,13 +257,18 @@ class Controller {
    public function output($print = TRUE, $clear = TRUE){
       $output = $this->output;
 
+      if ($output && !$this->response->body())
+         $this->response->setBody($output);
+
       if ($clear)
          $this->output = '';
 
       $this->closeConnection();
 
-      if ($print) echo     $output;
-      else        return   $output;
+      $output = $this->response->raw($print);
+      
+      if (!$print) 
+         return $output;
    }
 
    public function startConnection() {

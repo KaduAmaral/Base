@@ -45,8 +45,6 @@ class Environment extends \CMP\Command\Command {
      $path = "{$this->config->public}/{$this->env}.htaccess";
      $newPath = "{$this->config->public}/.htaccess";
      $this->console->writeln("Setting htaccess file");
-     $this->console->writeln("From: <info>{$path}</info>");
-     $this->console->writeln("To: <info>{$newPath}</info>");
      if (file_exists($path))
         copy($path, $newPath);
      else
